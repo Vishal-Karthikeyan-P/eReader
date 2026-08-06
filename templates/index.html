@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Book Reader</title>
+
+    <style>
+        body{
+            font-family:Arial;
+            margin:40px;
+            background:#f5f5f5;
+        }
+
+        h1{
+            color:#333;
+        }
+
+        .book{
+            background:white;
+            padding:15px;
+            margin:10px 0;
+            border-radius:8px;
+        }
+
+        a{
+            text-decoration:none;
+            color:blue;
+        }
+
+        a:hover{
+            text-decoration:underline;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<h1>📚 Book Reader</h1>
+
+{% if books %}
+
+    {% for book in books %}
+
+    <div class="book">
+        <h3>{{ book.title }}</h3>
+
+        <a href="{{ book.link }}" target="_blank">
+            Read Book
+        </a>
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+<p>No books found.</p>
+
+{% endif %}
+
+</body>
+</html>
