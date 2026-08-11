@@ -20,6 +20,7 @@
                 -apple-system,
                 BlinkMacSystemFont,
                 "Segoe UI",
+                Arial,
                 sans-serif;
 
             background: #0f1115;
@@ -38,18 +39,16 @@
 
             display: flex;
             align-items: center;
-
             justify-content: space-between;
 
             padding: 0 6%;
 
-            border-bottom: 1px solid #252830;
+            background: rgba(15, 17, 21, 0.95);
 
-            background: rgba(15, 17, 21, 0.92);
+            border-bottom: 1px solid #252830;
 
             position: sticky;
             top: 0;
-
             z-index: 100;
         }
 
@@ -75,9 +74,9 @@
             align-items: center;
             justify-content: center;
 
-            background: #f0f0f0;
+            background: #eeeeee;
 
-            color: #111;
+            color: #111111;
 
             border-radius: 9px;
 
@@ -86,7 +85,7 @@
 
 
         .header-right {
-            color: #8f949f;
+            color: #858b97;
 
             font-size: 14px;
         }
@@ -152,7 +151,7 @@
 
 
         .hero h1 span {
-            color: #8d94a3;
+            color: #858b98;
         }
 
 
@@ -168,7 +167,7 @@
 
 
         /* =========================
-           BOOKS SECTION
+           BOOK SECTION
         ========================= */
 
         .books-section {
@@ -184,7 +183,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: space-between;
 
             margin-bottom: 24px;
@@ -221,6 +219,10 @@
         }
 
 
+        /* =========================
+           BOOK CARD
+        ========================= */
+
         .book {
             background: #16191f;
 
@@ -230,12 +232,12 @@
 
             padding: 14px;
 
+            overflow: hidden;
+
             transition:
                 transform 0.2s ease,
                 border-color 0.2s ease,
                 background 0.2s ease;
-
-            overflow: hidden;
         }
 
 
@@ -260,7 +262,7 @@
             background:
                 linear-gradient(
                     135deg,
-                    #252a34,
+                    #292e39,
                     #171a20
                 );
 
@@ -296,7 +298,7 @@
 
             background: rgba(0, 0, 0, 0.55);
 
-            color: #ddd;
+            color: #dddddd;
 
             font-size: 11px;
 
@@ -305,7 +307,7 @@
 
 
         /* =========================
-           BOOK INFORMATION
+           BOOK DETAILS
         ========================= */
 
         .book h3 {
@@ -313,7 +315,7 @@
 
             line-height: 1.4;
 
-            margin-bottom: 12px;
+            margin-bottom: 10px;
 
             white-space: nowrap;
 
@@ -328,7 +330,7 @@
 
             font-size: 12px;
 
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
 
@@ -386,7 +388,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             width: 100%;
@@ -397,7 +398,7 @@
 
             background: #eeeeee;
 
-            color: #111;
+            color: #111111;
 
             text-decoration: none;
 
@@ -405,12 +406,23 @@
 
             font-weight: 600;
 
-            transition: background 0.2s ease;
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
         }
 
 
         .read-button:hover {
             background: #ffffff;
+
+            transform: translateY(-1px);
+        }
+
+
+        .read-arrow {
+            margin-left: 7px;
+
+            font-size: 15px;
         }
 
 
@@ -433,6 +445,13 @@
             margin-bottom: 15px;
 
             opacity: 0.5;
+        }
+
+
+        .empty h3 {
+            color: #c5c8ce;
+
+            margin-bottom: 8px;
         }
 
 
@@ -470,8 +489,7 @@
 
 
             .hero {
-                padding:
-                    50px 20px 35px;
+                padding: 50px 20px 35px;
             }
 
 
@@ -488,8 +506,7 @@
 
 
             .books-section {
-                padding:
-                    10px 20px 60px;
+                padding: 10px 20px 60px;
             }
 
 
@@ -517,8 +534,19 @@
                 font-size: 14px;
             }
 
+
+            .read-button {
+                font-size: 12px;
+
+                padding: 9px;
+            }
+
         }
 
+
+        /* =========================
+           SMALL MOBILE
+        ========================= */
 
         @media (max-width: 380px) {
 
@@ -541,6 +569,10 @@
 <body>
 
 
+<!-- =========================
+     HEADER
+========================= -->
+
 <header>
 
     <div class="logo">
@@ -555,14 +587,16 @@
 
 
     <div class="header-right">
-
         Your personal bookshelf
-
     </div>
 
 </header>
 
 
+
+<!-- =========================
+     HERO
+========================= -->
 
 <section class="hero">
 
@@ -586,7 +620,7 @@
     <p class="hero-description">
 
         A simple, distraction-free place for your books.
-        Pick a book from your library and continue reading
+        Pick a book from your library and start reading
         whenever you want.
 
     </p>
@@ -594,6 +628,10 @@
 </section>
 
 
+
+<!-- =========================
+     BOOKS
+========================= -->
 
 <section class="books-section">
 
@@ -633,6 +671,8 @@
         <article class="book">
 
 
+            <!-- Book cover -->
+
             <div class="book-cover">
 
                 <div class="book-cover-icon">
@@ -646,6 +686,8 @@
 
             </div>
 
+
+            <!-- Book title -->
 
             <h3 title="{{ book.title }}">
 
@@ -661,13 +703,19 @@
             </div>
 
 
+            <!-- Progress -->
+
             <div class="progress-container">
 
                 <div class="progress-info">
 
-                    <span>Progress</span>
+                    <span>
+                        Progress
+                    </span>
 
-                    <span>0%</span>
+                    <span>
+                        0%
+                    </span>
 
                 </div>
 
@@ -683,13 +731,20 @@
             </div>
 
 
+            <!-- ORIGINAL BOOK LINK -->
+
             <a
                 class="read-button"
-                href="/reader?title={{ book.title | urlencode }}&link={{ book.link | urlencode }}"
+                href="{{ book.link }}"
+                target="_blank"
+                rel="noopener noreferrer"
             >
 
                 Read Book
-                <span style="margin-left:6px;">→</span>
+
+                <span class="read-arrow">
+                    →
+                </span>
 
             </a>
 
@@ -706,13 +761,19 @@
     {% else %}
 
 
+    <!-- Empty library -->
+
     <div class="empty">
 
         <div class="empty-icon">
             📚
         </div>
 
-        <h3>No books yet</h3>
+
+        <h3>
+            No books yet
+        </h3>
+
 
         <p>
             Your library is currently empty.
@@ -727,6 +788,10 @@
 </section>
 
 
+
+<!-- =========================
+     FOOTER
+========================= -->
 
 <footer>
 
