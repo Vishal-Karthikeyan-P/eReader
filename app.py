@@ -3,16 +3,21 @@ import requests
 
 app = Flask(__name__)
 
-# Replace this with your hosted JSON URL after deployment
-BOOKS_URL = "https://drive.google.com/uc?export=download&id=1GwKEkGCxFPwV1HIl37bKZMofoPypNZfY/"
+BOOKS_URL = "https://drive.google.com/uc?export=download&id=1GwKEkGCxFPwV1HIl37bKZMofoPypNZfY"
+
 
 @app.route("/")
 def home():
     try:
-        books = requests.get(BOOKS_URL).json()
-    except:
+        response = requests.get(BOOKS_URL, timeout=10)
+        response.raise_for_status()
+        books = response.json()
+    except Exception as e:
+        print("Error loading books:", e)
         books = []
+
     return render_template("index.html", books=books)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
