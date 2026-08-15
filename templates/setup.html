@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Book Reader - Setup</title>
+
+    <link rel="stylesheet"
+          href="/static/css/style.css">
+
+</head>
+
+<body class="setup-page">
+
+<div class="setup-container">
+
+    <div class="setup-icon">
+        📚
+    </div>
+
+    <h1>Welcome to Book Reader</h1>
+
+    <p class="setup-description">
+        Connect a public Google Drive folder containing
+        your PDF and EPUB books.
+    </p>
+
+    <form id="driveForm">
+
+        <label for="driveUrl">
+            Google Drive Folder
+        </label>
+
+        <input
+            type="url"
+            id="driveUrl"
+            placeholder="https://drive.google.com/drive/folders/..."
+            required
+        >
+
+        <button type="submit" class="primary-button">
+            Connect Library
+        </button>
+
+    </form>
+
+    <div id="status"></div>
+
+    <p class="setup-note">
+        Your folder URL is stored only in this browser.
+        No Google login is required.
+    </p>
+
+</div>
+
+<script>
+
+document.getElementById("driveForm")
+.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const input =
+        document.getElementById("driveUrl");
+
+    const status =
+        document.getElementById("status");
+
+    const folder =
+        input.value.trim();
+
+    if (!folder) {
+        return;
+    }
+
+    status.innerHTML =
+        "Checking your Drive folder...";
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/library?folder=" +
+                encodeURIComponent(folder)
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            status.innerHTML =
+                "❌ " + data.error;
+
+            return;
+        }
+
+        localStorage.setItem(
+            "driveFolder",
+            folder
+        );
+
+        localStorage.setItem(
+            "library",
+            JSON.stringify(data.books)
+        );
+
+        localStorage.setItem(
+            "libraryLastChecked",
+            Date.now().toString()
+        );
+
+        status.innerHTML =
+            "✓ Found " +
+            data.count +
+            " books. Opening bookshelf...";
+
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 500);
+
+    } catch (error) {
+
+        status.innerHTML =
+            "❌ Could not connect to the folder.";
+
+        console.error(error);
+    }
+
+});
+
+</script>
+
+</body>
+</html>
