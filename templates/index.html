@@ -3,803 +3,619 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Book Reader</title>
+<title>Book Reader</title>
 
+<style>
 
-    <style>
+* {
+    box-sizing: border-box;
+}
 
-        * {
-            box-sizing: border-box;
-        }
+body {
 
+    margin: 0;
 
-        body {
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 
-            margin: 0;
+    background: #f6f7fb;
 
-            font-family:
-                Inter,
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
+    color: #111827;
+}
 
-            background: #f6f7fb;
+header {
 
-            color: #171923;
+    position: sticky;
 
-        }
+    top: 0;
 
+    z-index: 10;
 
-        /* ==================================================
-           HEADER
-        ================================================== */
+    background:
+        rgba(255,255,255,.94);
 
-        header {
+    backdrop-filter:
+        blur(12px);
 
-            position: sticky;
+    border-bottom:
+        1px solid #e5e7eb;
+}
 
-            top: 0;
+.header-inner {
 
-            z-index: 10;
+    max-width: 1250px;
 
-            background:
-                rgba(255,255,255,0.92);
+    margin: auto;
 
-            backdrop-filter:
-                blur(14px);
+    padding:
+        16px 24px;
 
-            border-bottom:
-                1px solid #e6e8ef;
+    display: flex;
 
-        }
+    justify-content: space-between;
 
+    align-items: center;
 
-        .header-inner {
+    gap: 20px;
+}
 
-            max-width: 1250px;
+.brand {
 
-            margin: auto;
+    display: flex;
 
-            padding:
-                18px 24px;
+    align-items: center;
 
-            display: flex;
+    gap: 12px;
+}
 
-            align-items: center;
+.brand-icon {
 
-            justify-content: space-between;
+    width: 42px;
 
-            gap: 20px;
+    height: 42px;
 
-        }
+    border-radius: 12px;
 
+    background: #111827;
 
-        .brand {
+    display: flex;
 
-            display: flex;
+    align-items: center;
 
-            align-items: center;
+    justify-content: center;
 
-            gap: 12px;
+    font-size: 20px;
+}
 
-        }
+.brand h1 {
 
+    margin: 0;
 
-        .brand-icon {
+    font-size: 18px;
+}
 
-            width: 42px;
+.brand span {
 
-            height: 42px;
+    color: #8a91a1;
 
-            display: flex;
+    font-size: 12px;
+}
 
-            align-items: center;
+.actions {
 
-            justify-content: center;
+    display: flex;
 
-            background: #111827;
+    gap: 8px;
+}
 
-            color: white;
+.action-button {
 
-            border-radius: 12px;
+    border:
+        1px solid #e1e4eb;
 
-            font-size: 20px;
+    background: white;
 
-        }
+    padding:
+        10px 14px;
 
+    border-radius: 10px;
 
-        .brand h1 {
+    cursor: pointer;
 
-            margin: 0;
+    font-weight: 600;
+}
 
-            font-size: 19px;
+.action-button:hover {
 
-        }
+    background: #f1f3f7;
+}
 
+main {
 
-        .brand span {
+    max-width: 1250px;
 
-            display: block;
+    margin: auto;
 
-            color: #8a91a1;
+    padding:
+        35px 24px 60px;
+}
 
-            font-size: 12px;
+.hero {
 
-            margin-top: 2px;
+    display: flex;
 
-        }
+    align-items: flex-end;
 
+    justify-content: space-between;
 
-        .header-actions {
+    gap: 20px;
 
-            display: flex;
+    margin-bottom: 28px;
+}
 
-            gap: 8px;
+.hero h2 {
 
-        }
+    margin: 0;
 
+    font-size:
+        clamp(30px,4vw,42px);
 
-        .header-button {
+    letter-spacing: -1px;
+}
 
-            border: 1px solid #e1e4eb;
+.hero p {
 
-            background: white;
+    color: #737b8c;
 
-            padding:
-                10px 14px;
+    margin:
+        7px 0 0;
+}
 
-            border-radius: 10px;
+.stats {
 
-            cursor: pointer;
+    display: flex;
 
-            font-weight: 600;
+    gap: 10px;
+}
 
-            color: #353b49;
+.stat {
 
-        }
+    background: white;
 
+    border:
+        1px solid #e5e7eb;
 
-        .header-button:hover {
+    padding:
+        12px 16px;
 
-            background: #f1f3f7;
+    border-radius: 13px;
 
-        }
+    min-width: 100px;
+}
 
+.stat strong {
 
-        /* ==================================================
-           MAIN
-        ================================================== */
+    display: block;
 
-        main {
+    font-size: 20px;
+}
 
-            max-width: 1250px;
+.stat span {
 
-            margin: auto;
+    color: #7d8595;
 
-            padding:
-                35px 24px 60px;
+    font-size: 12px;
+}
 
-        }
+.toolbar {
 
+    display: flex;
 
-        .hero {
+    justify-content: space-between;
 
-            display: flex;
+    align-items: center;
 
-            justify-content: space-between;
+    margin-bottom: 24px;
 
-            align-items: end;
+    gap: 15px;
+}
 
-            gap: 25px;
+.search {
 
-            margin-bottom: 30px;
+    width:
+        min(320px,60vw);
 
-        }
+    padding:
+        12px 14px;
 
+    border:
+        1px solid #dfe3ea;
 
-        .hero h2 {
+    border-radius: 10px;
 
-            margin: 0;
+    background: white;
 
-            font-size:
-                clamp(28px, 4vw, 40px);
+    outline: none;
+}
 
-            letter-spacing:
-                -1px;
+.search:focus {
 
-        }
+    border-color: #6366f1;
 
+    box-shadow:
+        0 0 0 3px
+        rgba(99,102,241,.1);
+}
 
-        .hero p {
+.view-toggle {
 
-            margin:
-                8px 0 0;
+    display: flex;
 
-            color: #737b8c;
+    border:
+        1px solid #dfe3ea;
 
-        }
+    border-radius: 10px;
 
+    overflow: hidden;
 
-        .stats {
+    background: white;
+}
 
-            display: flex;
+.view-toggle button {
 
-            gap: 12px;
+    border: none;
 
-        }
+    background: white;
 
+    padding:
+        10px 14px;
 
-        .stat {
+    cursor: pointer;
+}
 
-            background: white;
+.view-toggle button.active {
 
-            border: 1px solid #e6e8ef;
+    background: #111827;
 
-            padding:
-                12px 16px;
+    color: white;
+}
 
-            border-radius: 12px;
+#bookshelf {
 
-            min-width: 100px;
+    display: grid;
 
-        }
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(190px,1fr)
+        );
 
+    gap: 22px;
+}
 
-        .stat strong {
+.book-card {
 
-            display: block;
+    background: white;
 
-            font-size: 20px;
+    border:
+        1px solid #e5e7eb;
 
-        }
+    border-radius: 16px;
 
+    overflow: hidden;
 
-        .stat span {
+    transition:
+        .2s;
+}
 
-            font-size: 12px;
+.book-card:hover {
 
-            color: #818899;
+    transform:
+        translateY(-3px);
 
-        }
+    box-shadow:
+        0 14px 35px
+        rgba(0,0,0,.08);
+}
 
+.cover {
 
-        /* ==================================================
-           TOOLBAR
-        ================================================== */
+    height: 250px;
 
-        .toolbar {
+    background:
+        linear-gradient(
+            135deg,
+            #e8eaf1,
+            #cfd4df
+        );
 
-            display: flex;
+    display: flex;
 
-            align-items: center;
+    align-items: center;
 
-            justify-content: space-between;
+    justify-content: center;
 
-            gap: 15px;
+    overflow: hidden;
+}
 
-            margin-bottom: 25px;
+.cover img {
 
-        }
+    width: 100%;
 
+    height: 100%;
 
-        .toolbar-left {
+    object-fit: cover;
+}
 
-            display: flex;
+.placeholder {
 
-            align-items: center;
+    font-size: 55px;
+}
 
-            gap: 10px;
+.book-info {
 
-        }
+    padding: 15px;
+}
 
+.book-title {
 
-        .search {
+    margin: 0;
 
-            width:
-                min(300px, 50vw);
+    min-height: 44px;
 
-            padding:
-                11px 14px;
+    font-size: 16px;
 
-            border:
-                1px solid #dfe2e9;
+    line-height: 1.35;
+}
 
-            border-radius: 10px;
+.book-type {
 
-            outline: none;
+    display: inline-block;
 
-            background: white;
+    margin-top: 8px;
 
-        }
+    font-size: 10px;
 
+    font-weight: 700;
 
-        .search:focus {
+    background: #eef0ff;
 
-            border-color: #6366f1;
+    color: #575bd6;
 
-        }
+    padding:
+        4px 7px;
 
+    border-radius: 6px;
+}
 
-        .view-toggle {
+.progress-container {
 
-            display: flex;
+    margin-top: 14px;
+}
 
-            background: white;
+.progress-label {
 
-            border:
-                1px solid #e1e4eb;
+    display: flex;
 
-            border-radius: 10px;
+    justify-content: space-between;
 
-            overflow: hidden;
+    color: #818899;
 
-        }
+    font-size: 11px;
 
+    margin-bottom: 5px;
+}
 
-        .view-toggle button {
+.progress {
 
-            border: none;
+    height: 5px;
 
-            background: white;
+    background: #e6e8ed;
 
-            padding:
-                10px 13px;
+    border-radius: 5px;
 
-            cursor: pointer;
+    overflow: hidden;
+}
 
-        }
+.progress-bar {
 
+    height: 100%;
 
-        .view-toggle button.active {
+    background: #6366f1;
+}
 
-            background: #111827;
+.read-button {
 
-            color: white;
+    width: 100%;
 
-        }
+    border: none;
 
+    background: #111827;
 
-        /* ==================================================
-           BOOKSHELF GRID
-        ================================================== */
+    color: white;
 
-        #bookshelf {
+    padding: 10px;
 
-            display: grid;
+    border-radius: 9px;
 
-            grid-template-columns:
-                repeat(
-                    auto-fill,
-                    minmax(190px, 1fr)
-                );
+    margin-top: 14px;
 
-            gap: 22px;
+    cursor: pointer;
 
-        }
+    font-weight: 600;
+}
 
+.read-button:hover {
 
-        .book-card {
+    background: #292f3d;
+}
 
-            background: white;
+.loading,
+.empty,
+.error {
 
-            border:
-                1px solid #e7e9ef;
+    grid-column: 1/-1;
 
-            border-radius: 16px;
+    background: white;
 
-            overflow: hidden;
+    border-radius: 16px;
 
-            transition:
-                transform .2s,
-                box-shadow .2s;
+    padding: 60px 25px;
 
-        }
+    text-align: center;
+}
 
+.loading {
 
-        .book-card:hover {
+    color: #7c8494;
+}
 
-            transform:
-                translateY(-3px);
+.error {
 
-            box-shadow:
-                0 15px 35px
-                rgba(0,0,0,.08);
+    background: #fff1f2;
 
-        }
+    color: #be123c;
 
+    text-align: left;
+}
 
-        .cover {
+.empty-icon {
 
-            height: 250px;
+    font-size: 45px;
+}
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #e7e9f2,
-                    #cfd4e1
-                );
+#bookshelf.list-view {
 
-            display: flex;
+    display: flex;
 
-            align-items: center;
+    flex-direction: column;
 
-            justify-content: center;
+    gap: 10px;
+}
 
-            overflow: hidden;
+.list-view .book-card {
 
-        }
+    display: flex;
 
+    align-items: center;
 
-        .cover img {
+    padding: 10px;
+}
 
-            width: 100%;
+.list-view .cover {
 
-            height: 100%;
+    width: 70px;
 
-            object-fit: cover;
+    height: 90px;
 
-        }
+    flex-shrink: 0;
 
+    border-radius: 8px;
+}
 
-        .placeholder {
+.list-view .book-info {
 
-            font-size: 55px;
+    flex: 1;
 
-        }
+    padding:
+        0 15px;
+}
 
+.list-view .book-title {
 
-        .book-info {
+    min-height: 0;
+}
 
-            padding: 15px;
+.list-view .read-button {
 
-        }
+    width: 120px;
 
+    margin:
+        0 10px 0 0;
+}
 
-        .book-title {
+@media(max-width:700px) {
 
-            margin: 0;
+    .header-inner {
 
-            font-size: 16px;
+        padding:
+            14px 16px;
+    }
 
-            line-height: 1.35;
+    main {
 
-            min-height: 43px;
+        padding:
+            25px 16px;
+    }
 
-        }
+    .hero {
 
+        flex-direction: column;
 
-        .book-type {
+        align-items: flex-start;
+    }
 
-            display: inline-block;
+    .stats {
 
-            margin-top: 8px;
+        width: 100%;
+    }
 
-            font-size: 10px;
+    .stat {
 
-            font-weight: 700;
+        flex: 1;
+    }
 
-            padding:
-                4px 7px;
+    .toolbar {
 
-            border-radius: 6px;
+        flex-direction: column;
 
-            background: #eef0ff;
+        align-items: stretch;
+    }
 
-            color: #575bd6;
+    .search {
 
-        }
+        width: 100%;
+    }
 
+    #bookshelf {
 
-        .progress-container {
+        grid-template-columns:
+            repeat(2,1fr);
 
-            margin-top: 14px;
+        gap: 12px;
+    }
 
-        }
+    .cover {
 
+        height: 210px;
+    }
 
-        .progress-label {
+    .list-view .book-card {
 
-            display: flex;
+        flex-wrap: wrap;
+    }
 
-            justify-content: space-between;
+    .list-view .read-button {
 
-            font-size: 11px;
+        width: 100%;
 
-            color: #818899;
+        margin: 10px 0 0;
+    }
+}
 
-            margin-bottom: 5px;
-
-        }
-
-
-        .progress {
-
-            height: 5px;
-
-            border-radius: 5px;
-
-            background: #e7e9ef;
-
-            overflow: hidden;
-
-        }
-
-
-        .progress-bar {
-
-            height: 100%;
-
-            background: #6366f1;
-
-            border-radius: inherit;
-
-        }
-
-
-        .read-button {
-
-            width: 100%;
-
-            margin-top: 14px;
-
-            padding: 10px;
-
-            border: none;
-
-            border-radius: 9px;
-
-            background: #111827;
-
-            color: white;
-
-            cursor: pointer;
-
-            font-weight: 600;
-
-        }
-
-
-        .read-button:hover {
-
-            background: #292f3d;
-
-        }
-
-
-        /* ==================================================
-           LIST VIEW
-        ================================================== */
-
-        #bookshelf.list-view {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 10px;
-
-        }
-
-
-        .list-view .book-card {
-
-            display: flex;
-
-            align-items: center;
-
-            padding: 12px;
-
-        }
-
-
-        .list-view .cover {
-
-            width: 65px;
-
-            height: 85px;
-
-            flex-shrink: 0;
-
-            border-radius: 8px;
-
-        }
-
-
-        .list-view .book-info {
-
-            flex: 1;
-
-            padding:
-                0 15px;
-
-        }
-
-
-        .list-view .book-title {
-
-            min-height: 0;
-
-        }
-
-
-        .list-view .progress-container {
-
-            max-width: 300px;
-
-        }
-
-
-        .list-view .read-button {
-
-            width: 110px;
-
-            margin: 0;
-
-        }
-
-
-        /* ==================================================
-           STATES
-        ================================================== */
-
-        .loading {
-
-            grid-column:
-                1 / -1;
-
-            text-align: center;
-
-            padding: 70px;
-
-            color: #7b8292;
-
-        }
-
-
-        .empty {
-
-            grid-column:
-                1 / -1;
-
-            background: white;
-
-            border:
-                1px solid #e5e7eb;
-
-            padding: 60px 30px;
-
-            border-radius: 18px;
-
-            text-align: center;
-
-        }
-
-
-        .empty-icon {
-
-            font-size: 45px;
-
-            margin-bottom: 10px;
-
-        }
-
-
-        .error {
-
-            grid-column:
-                1 / -1;
-
-            padding: 25px;
-
-            border-radius: 14px;
-
-            background: #fff1f2;
-
-            color: #be123c;
-
-        }
-
-
-        /* ==================================================
-           RESPONSIVE
-        ================================================== */
-
-        @media (max-width: 700px) {
-
-            .header-inner {
-
-                padding:
-                    14px 16px;
-
-            }
-
-            main {
-
-                padding:
-                    25px 16px;
-
-            }
-
-            .hero {
-
-                align-items: start;
-
-                flex-direction: column;
-
-            }
-
-            .stats {
-
-                width: 100%;
-
-            }
-
-            .stat {
-
-                flex: 1;
-
-            }
-
-            .toolbar {
-
-                flex-direction: column;
-
-                align-items: stretch;
-
-            }
-
-            .search {
-
-                width: 100%;
-
-            }
-
-            #bookshelf {
-
-                grid-template-columns:
-                    repeat(
-                        2,
-                        minmax(0, 1fr)
-                    );
-
-                gap: 12px;
-
-            }
-
-            .cover {
-
-                height: 210px;
-
-            }
-
-            .list-view .book-card {
-
-                flex-wrap: wrap;
-
-            }
-
-            .list-view .progress-container {
-
-                width: 100%;
-
-                max-width: none;
-
-                margin-left: 77px;
-
-            }
-
-        }
-
-    </style>
+</style>
 
 </head>
 
@@ -809,50 +625,50 @@
 
 <header>
 
-    <div class="header-inner">
+<div class="header-inner">
 
-        <div class="brand">
+    <div class="brand">
 
-            <div class="brand-icon">
-                📚
-            </div>
-
-            <div>
-
-                <h1>
-                    Book Reader
-                </h1>
-
-                <span>
-                    Your personal library
-                </span>
-
-            </div>
-
+        <div class="brand-icon">
+            📚
         </div>
 
+        <div>
 
-        <div class="header-actions">
+            <h1>
+                Book Reader
+            </h1>
 
-            <button
-                class="header-button"
-                onclick="checkForUpdates()"
-                id="updateButton"
-            >
-                ↻ Check Updates
-            </button>
-
-
-            <button
-                class="header-button"
-                onclick="changeLibrary()"
-            >
-                ⚙ Library
-            </button>
+            <span>
+                Your personal library
+            </span>
 
         </div>
 
     </div>
+
+
+    <div class="actions">
+
+        <button
+            class="action-button"
+            id="updateButton"
+            onclick="checkForUpdates()"
+        >
+            ↻ Check Updates
+        </button>
+
+
+        <button
+            class="action-button"
+            onclick="changeLibrary()"
+        >
+            ⚙ Library
+        </button>
+
+    </div>
+
+</div>
 
 </header>
 
@@ -860,98 +676,92 @@
 <main>
 
 
-    <section class="hero">
+<section class="hero">
 
-        <div>
+    <div>
 
-            <h2>
-                My Bookshelf
-            </h2>
+        <h2>
+            My Bookshelf
+        </h2>
 
-            <p id="lastUpdated">
-                Loading your library...
-            </p>
+        <p id="lastUpdated">
+            Loading your library...
+        </p>
 
-        </div>
-
-
-        <div class="stats">
-
-            <div class="stat">
-
-                <strong id="totalBooks">
-                    0
-                </strong>
-
-                <span>
-                    Books
-                </span>
-
-            </div>
+    </div>
 
 
-            <div class="stat">
+    <div class="stats">
 
-                <strong id="completedBooks">
-                    0
-                </strong>
+        <div class="stat">
 
-                <span>
-                    Completed
-                </span>
+            <strong id="totalBooks">
+                0
+            </strong>
 
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <div class="toolbar">
-
-        <div class="toolbar-left">
-
-            <input
-                class="search"
-                id="search"
-                type="search"
-                placeholder="Search books..."
-            >
+            <span>
+                Books
+            </span>
 
         </div>
 
 
-        <div class="view-toggle">
+        <div class="stat">
 
-            <button
-                id="gridButton"
-                class="active"
-                onclick="setView('grid')"
-            >
-                ▦
-            </button>
+            <strong id="completedBooks">
+                0
+            </strong>
 
-            <button
-                id="listButton"
-                onclick="setView('list')"
-            >
-                ☰
-            </button>
+            <span>
+                Completed
+            </span>
 
         </div>
 
     </div>
 
+</section>
 
-    <div id="bookshelf">
 
-        <div class="loading">
+<div class="toolbar">
 
-            Loading books...
+    <input
+        class="search"
+        id="search"
+        type="search"
+        placeholder="Search books..."
+    >
 
-        </div>
+
+    <div class="view-toggle">
+
+        <button
+            id="gridButton"
+            class="active"
+            onclick="setView('grid')"
+        >
+            ▦
+        </button>
+
+        <button
+            id="listButton"
+            onclick="setView('list')"
+        >
+            ☰
+        </button>
 
     </div>
+
+</div>
+
+
+<div id="bookshelf">
+
+    <div class="loading">
+        Loading your library...
+    </div>
+
+</div>
 
 
 </main>
@@ -959,30 +769,116 @@
 
 <script>
 
-/* ==========================================================
-   STATE
-========================================================== */
-
 let allBooks = [];
 
-let currentView = "grid";
+let currentView =
+    localStorage.getItem(
+        "bookshelfView"
+    ) || "grid";
 
 
-/* ==========================================================
-   LOAD BOOKS
-========================================================== */
+// ============================================================
+// UPDATE STATS
+// ============================================================
+
+function updateStats() {
+
+    const total =
+        allBooks.length;
+
+
+    let completed = 0;
+
+
+    allBooks.forEach(
+        book => {
+
+            if (
+                getProgress(book) >= 100
+            ) {
+
+                completed++;
+
+            }
+
+        }
+    );
+
+
+    document.getElementById(
+        "totalBooks"
+    ).textContent =
+        total;
+
+
+    document.getElementById(
+        "completedBooks"
+    ).textContent =
+        completed;
+}
+
+
+// ============================================================
+// GET BOOK PROGRESS
+// ============================================================
+
+function getProgress(book) {
+
+    const key =
+        "reading_" +
+        book.id;
+
+
+    const saved =
+        localStorage.getItem(
+            key
+        );
+
+
+    if (!saved) {
+        return 0;
+    }
+
+
+    try {
+
+        const data =
+            JSON.parse(saved);
+
+
+        return Math.max(
+            0,
+            Math.min(
+                100,
+                Number(
+                    data.progress || 0
+                )
+            )
+        );
+
+    } catch {
+
+        return 0;
+
+    }
+}
+
+
+// ============================================================
+// LOAD LIBRARY
+// ============================================================
 
 async function loadBooks(
     showLoading = true
 ) {
 
-    const folderUrl =
+    const folder =
         localStorage.getItem(
             "driveFolder"
         );
 
 
-    if (!folderUrl) {
+    if (!folder) {
 
         window.location.href =
             "/setup";
@@ -1011,21 +907,19 @@ async function loadBooks(
             await fetch(
                 "/api/library?folder=" +
                 encodeURIComponent(
-                    folderUrl
+                    folder
                 ) +
                 "&t=" +
-                Date.now()
+                Date.now(),
+                {
+                    cache:
+                        "no-store"
+                }
             );
 
 
         const data =
             await response.json();
-
-
-        console.log(
-            "Library response:",
-            data
-        );
 
 
         if (
@@ -1035,7 +929,7 @@ async function loadBooks(
 
             throw new Error(
                 data.error ||
-                "Unable to load library"
+                "Unable to load library."
             );
 
         }
@@ -1045,7 +939,6 @@ async function loadBooks(
             data.books || [];
 
 
-        // Save latest library locally
         localStorage.setItem(
             "books",
             JSON.stringify(
@@ -1076,24 +969,26 @@ async function loadBooks(
     } catch (error) {
 
         console.error(
-            "Library error:",
             error
         );
 
 
-        // Try previously cached books
-        const cached =
-            localStorage.getItem(
-                "books"
-            );
+        // Try cached library
+
+        try {
+
+            const cached =
+                JSON.parse(
+                    localStorage.getItem(
+                        "books"
+                    ) || "[]"
+                );
 
 
-        if (cached) {
-
-            try {
+            if (cached.length) {
 
                 allBooks =
-                    JSON.parse(cached);
+                    cached;
 
                 updateStats();
 
@@ -1108,25 +1003,32 @@ async function loadBooks(
 
                 return;
 
-            } catch (e) {
-
-                console.error(e);
-
             }
 
+        } catch {
+
+            // Nothing cached
         }
 
 
         document.getElementById(
             "bookshelf"
         ).innerHTML = `
+
             <div class="error">
-                ❌ Unable to load your library.
+
+                <strong>
+                    ❌ Unable to load your library.
+                </strong>
+
                 <br><br>
+
                 ${escapeHtml(
                     error.message
                 )}
+
             </div>
+
         `;
 
     }
@@ -1134,9 +1036,9 @@ async function loadBooks(
 }
 
 
-/* ==========================================================
-   DISPLAY BOOKS
-========================================================== */
+// ============================================================
+// DISPLAY
+// ============================================================
 
 function displayBooks(
     books
@@ -1167,6 +1069,8 @@ function displayBooks(
 
     if (!filtered.length) {
 
+        bookshelf.className = "";
+
         bookshelf.innerHTML = `
 
             <div class="empty">
@@ -1178,20 +1082,16 @@ function displayBooks(
                 <h2>
                     ${
                         query
-                        ?
-                        "No matching books"
-                        :
-                        "No books found"
+                        ? "No matching books"
+                        : "No books found"
                     }
                 </h2>
 
                 <p>
                     ${
                         query
-                        ?
-                        "Try a different search."
-                        :
-                        "No PDF or EPUB books were found."
+                        ? "Try another search."
+                        : "No PDF or EPUB books were found."
                     }
                 </p>
 
@@ -1216,10 +1116,13 @@ function displayBooks(
     filtered.forEach(
         book => {
 
-            bookshelf.appendChild(
+            const card =
                 createBookCard(
                     book
-                )
+                );
+
+            bookshelf.appendChild(
+                card
             );
 
         }
@@ -1228,9 +1131,9 @@ function displayBooks(
 }
 
 
-/* ==========================================================
-   CREATE BOOK CARD
-========================================================== */
+// ============================================================
+// BOOK CARD
+// ============================================================
 
 function createBookCard(
     book
@@ -1256,26 +1159,38 @@ function createBookCard(
         progress >= 100;
 
 
-    const cover =
-        book.thumbnail
-        ?
-        `
+    let cover;
+
+
+    if (book.thumbnail) {
+
+        cover = `
+
             <img
                 src="${escapeAttribute(book.thumbnail)}"
                 alt="${escapeAttribute(book.title)}"
                 loading="lazy"
             >
-        `
-        :
-        `
+
+        `;
+
+    } else {
+
+        cover = `
+
             <div class="placeholder">
+
                 ${
                     book.type === "pdf"
                     ? "📕"
                     : "📘"
                 }
+
             </div>
+
         `;
+
+    }
 
 
     card.innerHTML = `
@@ -1338,7 +1253,6 @@ function createBookCard(
 
             <button
                 class="read-button"
-                onclick="openBook('${escapeAttribute(book.id)}')"
             >
 
                 ${
@@ -1356,85 +1270,46 @@ function createBookCard(
     `;
 
 
-    return card;
+    // IMPORTANT:
+    // Don't put the complete object inside
+    // inline HTML JavaScript.
+    //
+    // Store it through the click handler.
 
+    card.querySelector(
+        ".read-button"
+    ).addEventListener(
+        "click",
+        function() {
+
+            openBook(
+                book
+            );
+
+        }
+    );
+
+
+    return card;
 }
 
 
-/* ==========================================================
-   PROGRESS
-========================================================== */
+// ============================================================
+// OPEN BOOK
+// ============================================================
 
-function getProgress(
+function openBook(
     book
 ) {
 
-    const key =
-        "reading_" +
-        book.id;
+    console.log(
+        "Opening book:",
+        book
+    );
 
 
-    const saved =
-        localStorage.getItem(
-            key
-        );
-
-
-    if (!saved) {
-
-        return 0;
-
-    }
-
-
-    try {
-
-        const data =
-            JSON.parse(
-                saved
-            );
-
-
-        return Math.min(
-            100,
-            Math.max(
-                0,
-                Number(
-                    data.progress || 0
-                )
-            )
-        );
-
-    } catch {
-
-        return 0;
-
-    }
-
-}
-
-
-/* ==========================================================
-   OPEN BOOK
-========================================================== */
-
-function openBook(
-    bookId
-) {
-
-    const book =
-        allBooks.find(
-            b =>
-                b.id === bookId
-        );
-
-
-    if (!book) {
-
-        return;
-
-    }
-
+    // IMPORTANT:
+    // Reader uses exactly this key.
 
     localStorage.setItem(
         "currentBook",
@@ -1445,7 +1320,9 @@ function openBook(
 
 
     // Reading history
+
     let history = [];
+
 
     try {
 
@@ -1472,11 +1349,14 @@ function openBook(
 
     history.unshift({
 
-        id: book.id,
+        id:
+            book.id,
 
-        title: book.title,
+        title:
+            book.title,
 
-        type: book.type,
+        type:
+            book.type,
 
         openedAt:
             new Date().toISOString()
@@ -1484,21 +1364,18 @@ function openBook(
     });
 
 
-    // Keep last 50
-    history =
-        history.slice(
-            0,
-            50
-        );
-
-
     localStorage.setItem(
         "readingHistory",
         JSON.stringify(
-            history
+            history.slice(
+                0,
+                50
+            )
         )
     );
 
+
+    // Go to reader
 
     window.location.href =
         "/reader";
@@ -1506,9 +1383,9 @@ function openBook(
 }
 
 
-/* ==========================================================
-   UPDATE LIBRARY
-========================================================== */
+// ============================================================
+// CHECK UPDATES
+// ============================================================
 
 async function checkForUpdates() {
 
@@ -1518,7 +1395,9 @@ async function checkForUpdates() {
         );
 
 
-    button.disabled = true;
+    button.disabled =
+        true;
+
 
     button.textContent =
         "Checking...";
@@ -1529,7 +1408,9 @@ async function checkForUpdates() {
     );
 
 
-    button.disabled = false;
+    button.disabled =
+        false;
+
 
     button.textContent =
         "↻ Check Updates";
@@ -1537,9 +1418,9 @@ async function checkForUpdates() {
 }
 
 
-/* ==========================================================
-   CHANGE LIBRARY
-========================================================== */
+// ============================================================
+// CHANGE LIBRARY
+// ============================================================
 
 function changeLibrary() {
 
@@ -1549,9 +1430,9 @@ function changeLibrary() {
 }
 
 
-/* ==========================================================
-   GRID / LIST
-========================================================== */
+// ============================================================
+// VIEW
+// ============================================================
 
 function setView(
     view
@@ -1559,6 +1440,12 @@ function setView(
 
     currentView =
         view;
+
+
+    localStorage.setItem(
+        "bookshelfView",
+        view
+    );
 
 
     document.getElementById(
@@ -1577,12 +1464,6 @@ function setView(
     );
 
 
-    localStorage.setItem(
-        "bookshelfView",
-        view
-    );
-
-
     displayBooks(
         allBooks
     );
@@ -1590,9 +1471,9 @@ function setView(
 }
 
 
-/* ==========================================================
-   SEARCH
-========================================================== */
+// ============================================================
+// SEARCH
+// ============================================================
 
 document.getElementById(
     "search"
@@ -1608,12 +1489,12 @@ document.getElementById(
 );
 
 
-/* ==========================================================
-   ESCAPE HTML
-========================================================== */
+// ============================================================
+// ESCAPE
+// ============================================================
 
 function escapeHtml(
-    text
+    value
 ) {
 
     const div =
@@ -1622,19 +1503,18 @@ function escapeHtml(
         );
 
     div.textContent =
-        text || "";
+        value || "";
 
     return div.innerHTML;
-
 }
 
 
 function escapeAttribute(
-    text
+    value
 ) {
 
     return String(
-        text || ""
+        value || ""
     )
     .replace(
         /&/g,
@@ -1660,21 +1540,13 @@ function escapeAttribute(
 }
 
 
-/* ==========================================================
-   INITIALIZE
-========================================================== */
-
-const savedView =
-    localStorage.getItem(
-        "bookshelfView"
-    );
-
+// ============================================================
+// INITIALIZE
+// ============================================================
 
 if (
-    savedView === "list"
+    currentView === "list"
 ) {
-
-    currentView = "list";
 
     document.getElementById(
         "gridButton"
@@ -1694,7 +1566,6 @@ if (
 loadBooks();
 
 </script>
-
 
 </body>
 
