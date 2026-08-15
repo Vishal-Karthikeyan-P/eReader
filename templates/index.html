@@ -5,124 +5,1697 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>My Bookshelf</title>
+    <title>Book Reader</title>
 
-    <link rel="stylesheet"
-          href="/static/css/style.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f6f7fb;
+
+            color: #171923;
+
+        }
+
+
+        /* ==================================================
+           HEADER
+        ================================================== */
+
+        header {
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 10;
+
+            background:
+                rgba(255,255,255,0.92);
+
+            backdrop-filter:
+                blur(14px);
+
+            border-bottom:
+                1px solid #e6e8ef;
+
+        }
+
+
+        .header-inner {
+
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding:
+                18px 24px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+        }
+
+
+        .brand-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #111827;
+
+            color: white;
+
+            border-radius: 12px;
+
+            font-size: 20px;
+
+        }
+
+
+        .brand h1 {
+
+            margin: 0;
+
+            font-size: 19px;
+
+        }
+
+
+        .brand span {
+
+            display: block;
+
+            color: #8a91a1;
+
+            font-size: 12px;
+
+            margin-top: 2px;
+
+        }
+
+
+        .header-actions {
+
+            display: flex;
+
+            gap: 8px;
+
+        }
+
+
+        .header-button {
+
+            border: 1px solid #e1e4eb;
+
+            background: white;
+
+            padding:
+                10px 14px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            color: #353b49;
+
+        }
+
+
+        .header-button:hover {
+
+            background: #f1f3f7;
+
+        }
+
+
+        /* ==================================================
+           MAIN
+        ================================================== */
+
+        main {
+
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding:
+                35px 24px 60px;
+
+        }
+
+
+        .hero {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: end;
+
+            gap: 25px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .hero h2 {
+
+            margin: 0;
+
+            font-size:
+                clamp(28px, 4vw, 40px);
+
+            letter-spacing:
+                -1px;
+
+        }
+
+
+        .hero p {
+
+            margin:
+                8px 0 0;
+
+            color: #737b8c;
+
+        }
+
+
+        .stats {
+
+            display: flex;
+
+            gap: 12px;
+
+        }
+
+
+        .stat {
+
+            background: white;
+
+            border: 1px solid #e6e8ef;
+
+            padding:
+                12px 16px;
+
+            border-radius: 12px;
+
+            min-width: 100px;
+
+        }
+
+
+        .stat strong {
+
+            display: block;
+
+            font-size: 20px;
+
+        }
+
+
+        .stat span {
+
+            font-size: 12px;
+
+            color: #818899;
+
+        }
+
+
+        /* ==================================================
+           TOOLBAR
+        ================================================== */
+
+        .toolbar {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .toolbar-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+        .search {
+
+            width:
+                min(300px, 50vw);
+
+            padding:
+                11px 14px;
+
+            border:
+                1px solid #dfe2e9;
+
+            border-radius: 10px;
+
+            outline: none;
+
+            background: white;
+
+        }
+
+
+        .search:focus {
+
+            border-color: #6366f1;
+
+        }
+
+
+        .view-toggle {
+
+            display: flex;
+
+            background: white;
+
+            border:
+                1px solid #e1e4eb;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+        }
+
+
+        .view-toggle button {
+
+            border: none;
+
+            background: white;
+
+            padding:
+                10px 13px;
+
+            cursor: pointer;
+
+        }
+
+
+        .view-toggle button.active {
+
+            background: #111827;
+
+            color: white;
+
+        }
+
+
+        /* ==================================================
+           BOOKSHELF GRID
+        ================================================== */
+
+        #bookshelf {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fill,
+                    minmax(190px, 1fr)
+                );
+
+            gap: 22px;
+
+        }
+
+
+        .book-card {
+
+            background: white;
+
+            border:
+                1px solid #e7e9ef;
+
+            border-radius: 16px;
+
+            overflow: hidden;
+
+            transition:
+                transform .2s,
+                box-shadow .2s;
+
+        }
+
+
+        .book-card:hover {
+
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 15px 35px
+                rgba(0,0,0,.08);
+
+        }
+
+
+        .cover {
+
+            height: 250px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e7e9f2,
+                    #cfd4e1
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+        }
+
+
+        .cover img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+
+        .placeholder {
+
+            font-size: 55px;
+
+        }
+
+
+        .book-info {
+
+            padding: 15px;
+
+        }
+
+
+        .book-title {
+
+            margin: 0;
+
+            font-size: 16px;
+
+            line-height: 1.35;
+
+            min-height: 43px;
+
+        }
+
+
+        .book-type {
+
+            display: inline-block;
+
+            margin-top: 8px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            padding:
+                4px 7px;
+
+            border-radius: 6px;
+
+            background: #eef0ff;
+
+            color: #575bd6;
+
+        }
+
+
+        .progress-container {
+
+            margin-top: 14px;
+
+        }
+
+
+        .progress-label {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            font-size: 11px;
+
+            color: #818899;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .progress {
+
+            height: 5px;
+
+            border-radius: 5px;
+
+            background: #e7e9ef;
+
+            overflow: hidden;
+
+        }
+
+
+        .progress-bar {
+
+            height: 100%;
+
+            background: #6366f1;
+
+            border-radius: inherit;
+
+        }
+
+
+        .read-button {
+
+            width: 100%;
+
+            margin-top: 14px;
+
+            padding: 10px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #111827;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+        }
+
+
+        .read-button:hover {
+
+            background: #292f3d;
+
+        }
+
+
+        /* ==================================================
+           LIST VIEW
+        ================================================== */
+
+        #bookshelf.list-view {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+
+        }
+
+
+        .list-view .book-card {
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 12px;
+
+        }
+
+
+        .list-view .cover {
+
+            width: 65px;
+
+            height: 85px;
+
+            flex-shrink: 0;
+
+            border-radius: 8px;
+
+        }
+
+
+        .list-view .book-info {
+
+            flex: 1;
+
+            padding:
+                0 15px;
+
+        }
+
+
+        .list-view .book-title {
+
+            min-height: 0;
+
+        }
+
+
+        .list-view .progress-container {
+
+            max-width: 300px;
+
+        }
+
+
+        .list-view .read-button {
+
+            width: 110px;
+
+            margin: 0;
+
+        }
+
+
+        /* ==================================================
+           STATES
+        ================================================== */
+
+        .loading {
+
+            grid-column:
+                1 / -1;
+
+            text-align: center;
+
+            padding: 70px;
+
+            color: #7b8292;
+
+        }
+
+
+        .empty {
+
+            grid-column:
+                1 / -1;
+
+            background: white;
+
+            border:
+                1px solid #e5e7eb;
+
+            padding: 60px 30px;
+
+            border-radius: 18px;
+
+            text-align: center;
+
+        }
+
+
+        .empty-icon {
+
+            font-size: 45px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .error {
+
+            grid-column:
+                1 / -1;
+
+            padding: 25px;
+
+            border-radius: 14px;
+
+            background: #fff1f2;
+
+            color: #be123c;
+
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (max-width: 700px) {
+
+            .header-inner {
+
+                padding:
+                    14px 16px;
+
+            }
+
+            main {
+
+                padding:
+                    25px 16px;
+
+            }
+
+            .hero {
+
+                align-items: start;
+
+                flex-direction: column;
+
+            }
+
+            .stats {
+
+                width: 100%;
+
+            }
+
+            .stat {
+
+                flex: 1;
+
+            }
+
+            .toolbar {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+            }
+
+            .search {
+
+                width: 100%;
+
+            }
+
+            #bookshelf {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
+
+                gap: 12px;
+
+            }
+
+            .cover {
+
+                height: 210px;
+
+            }
+
+            .list-view .book-card {
+
+                flex-wrap: wrap;
+
+            }
+
+            .list-view .progress-container {
+
+                width: 100%;
+
+                max-width: none;
+
+                margin-left: 77px;
+
+            }
+
+        }
+
+    </style>
 
 </head>
 
+
 <body>
 
-<header class="topbar">
 
-    <div class="brand">
-        📚 Book Reader
-    </div>
+<header>
 
-    <div class="toolbar">
+    <div class="header-inner">
 
-        <button id="refreshButton">
-            ↻ Check for Updates
-        </button>
+        <div class="brand">
 
-        <button id="changeFolderButton">
-            ⚙ Change Folder
-        </button>
+            <div class="brand-icon">
+                📚
+            </div>
 
-        <button id="viewButton">
-            ☷
-        </button>
+            <div>
+
+                <h1>
+                    Book Reader
+                </h1>
+
+                <span>
+                    Your personal library
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <button
+                class="header-button"
+                onclick="checkForUpdates()"
+                id="updateButton"
+            >
+                ↻ Check Updates
+            </button>
+
+
+            <button
+                class="header-button"
+                onclick="changeLibrary()"
+            >
+                ⚙ Library
+            </button>
+
+        </div>
 
     </div>
 
 </header>
 
 
-<main class="container">
+<main>
 
-    <section class="library-header">
+
+    <section class="hero">
 
         <div>
 
-            <h1>My Bookshelf</h1>
+            <h2>
+                My Bookshelf
+            </h2>
 
-            <p id="libraryStatus">
-                Loading library...
+            <p id="lastUpdated">
+                Loading your library...
             </p>
 
         </div>
 
-    </section>
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <strong id="totalBooks">
+                    0
+                </strong>
+
+                <span>
+                    Books
+                </span>
+
+            </div>
 
 
-    <section id="continueSection"
-             class="section">
+            <div class="stat">
 
-        <h2>Continue Reading</h2>
+                <strong id="completedBooks">
+                    0
+                </strong>
 
-        <div id="continueBooks"
-             class="books-grid">
-        </div>
-
-    </section>
-
-
-    <section class="section">
-
-        <div class="section-heading">
-
-            <h2>All Books</h2>
-
-            <div>
-
-                <button
-                    class="filter-button active"
-                    data-filter="all">
-                    All
-                </button>
-
-                <button
-                    class="filter-button"
-                    data-filter="progress">
-                    Reading
-                </button>
-
-                <button
-                    class="filter-button"
-                    data-filter="completed">
+                <span>
                     Completed
-                </button>
+                </span>
 
             </div>
 
         </div>
 
-        <div id="books"
-             class="books-grid">
-        </div>
-
     </section>
 
 
-    <section id="historySection"
-             class="section">
+    <div class="toolbar">
 
-        <h2>Reading History</h2>
+        <div class="toolbar-left">
 
-        <div id="history"
-             class="history-list">
+            <input
+                class="search"
+                id="search"
+                type="search"
+                placeholder="Search books..."
+            >
+
         </div>
 
-    </section>
+
+        <div class="view-toggle">
+
+            <button
+                id="gridButton"
+                class="active"
+                onclick="setView('grid')"
+            >
+                ▦
+            </button>
+
+            <button
+                id="listButton"
+                onclick="setView('list')"
+            >
+                ☰
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="bookshelf">
+
+        <div class="loading">
+
+            Loading books...
+
+        </div>
+
+    </div>
+
 
 </main>
 
 
-<script src="/static/js/app.js"></script>
+<script>
+
+/* ==========================================================
+   STATE
+========================================================== */
+
+let allBooks = [];
+
+let currentView = "grid";
+
+
+/* ==========================================================
+   LOAD BOOKS
+========================================================== */
+
+async function loadBooks(
+    showLoading = true
+) {
+
+    const folderUrl =
+        localStorage.getItem(
+            "driveFolder"
+        );
+
+
+    if (!folderUrl) {
+
+        window.location.href =
+            "/setup";
+
+        return;
+
+    }
+
+
+    if (showLoading) {
+
+        document.getElementById(
+            "bookshelf"
+        ).innerHTML = `
+            <div class="loading">
+                Loading your library...
+            </div>
+        `;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/library?folder=" +
+                encodeURIComponent(
+                    folderUrl
+                ) +
+                "&t=" +
+                Date.now()
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Library response:",
+            data
+        );
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Unable to load library"
+            );
+
+        }
+
+
+        allBooks =
+            data.books || [];
+
+
+        // Save latest library locally
+        localStorage.setItem(
+            "books",
+            JSON.stringify(
+                allBooks
+            )
+        );
+
+
+        localStorage.setItem(
+            "libraryLastChecked",
+            new Date().toISOString()
+        );
+
+
+        updateStats();
+
+        displayBooks(
+            allBooks
+        );
+
+
+        document.getElementById(
+            "lastUpdated"
+        ).textContent =
+            `${allBooks.length} books · Last checked just now`;
+
+
+    } catch (error) {
+
+        console.error(
+            "Library error:",
+            error
+        );
+
+
+        // Try previously cached books
+        const cached =
+            localStorage.getItem(
+                "books"
+            );
+
+
+        if (cached) {
+
+            try {
+
+                allBooks =
+                    JSON.parse(cached);
+
+                updateStats();
+
+                displayBooks(
+                    allBooks
+                );
+
+                document.getElementById(
+                    "lastUpdated"
+                ).textContent =
+                    "Showing cached library";
+
+                return;
+
+            } catch (e) {
+
+                console.error(e);
+
+            }
+
+        }
+
+
+        document.getElementById(
+            "bookshelf"
+        ).innerHTML = `
+            <div class="error">
+                ❌ Unable to load your library.
+                <br><br>
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* ==========================================================
+   DISPLAY BOOKS
+========================================================== */
+
+function displayBooks(
+    books
+) {
+
+    const bookshelf =
+        document.getElementById(
+            "bookshelf"
+        );
+
+
+    const query =
+        document.getElementById(
+            "search"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const filtered =
+        books.filter(
+            book =>
+                book.title
+                    .toLowerCase()
+                    .includes(query)
+        );
+
+
+    if (!filtered.length) {
+
+        bookshelf.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    📚
+                </div>
+
+                <h2>
+                    ${
+                        query
+                        ?
+                        "No matching books"
+                        :
+                        "No books found"
+                    }
+                </h2>
+
+                <p>
+                    ${
+                        query
+                        ?
+                        "Try a different search."
+                        :
+                        "No PDF or EPUB books were found."
+                    }
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    bookshelf.className =
+        currentView === "list"
+        ? "list-view"
+        : "";
+
+
+    bookshelf.innerHTML = "";
+
+
+    filtered.forEach(
+        book => {
+
+            bookshelf.appendChild(
+                createBookCard(
+                    book
+                )
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   CREATE BOOK CARD
+========================================================== */
+
+function createBookCard(
+    book
+) {
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "book-card";
+
+
+    const progress =
+        getProgress(
+            book
+        );
+
+
+    const completed =
+        progress >= 100;
+
+
+    const cover =
+        book.thumbnail
+        ?
+        `
+            <img
+                src="${escapeAttribute(book.thumbnail)}"
+                alt="${escapeAttribute(book.title)}"
+                loading="lazy"
+            >
+        `
+        :
+        `
+            <div class="placeholder">
+                ${
+                    book.type === "pdf"
+                    ? "📕"
+                    : "📘"
+                }
+            </div>
+        `;
+
+
+    card.innerHTML = `
+
+        <div class="cover">
+
+            ${cover}
+
+        </div>
+
+
+        <div class="book-info">
+
+            <h3 class="book-title">
+
+                ${escapeHtml(
+                    book.title
+                )}
+
+            </h3>
+
+
+            <span class="book-type">
+
+                ${book.type.toUpperCase()}
+
+            </span>
+
+
+            <div class="progress-container">
+
+                <div class="progress-label">
+
+                    <span>
+                        ${
+                            completed
+                            ? "Completed"
+                            : "Progress"
+                        }
+                    </span>
+
+                    <span>
+                        ${progress}%
+                    </span>
+
+                </div>
+
+
+                <div class="progress">
+
+                    <div
+                        class="progress-bar"
+                        style="width:${progress}%"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="read-button"
+                onclick="openBook('${escapeAttribute(book.id)}')"
+            >
+
+                ${
+                    completed
+                    ? "Read Again"
+                    : progress > 0
+                    ? "Continue Reading"
+                    : "Start Reading"
+                }
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+/* ==========================================================
+   PROGRESS
+========================================================== */
+
+function getProgress(
+    book
+) {
+
+    const key =
+        "reading_" +
+        book.id;
+
+
+    const saved =
+        localStorage.getItem(
+            key
+        );
+
+
+    if (!saved) {
+
+        return 0;
+
+    }
+
+
+    try {
+
+        const data =
+            JSON.parse(
+                saved
+            );
+
+
+        return Math.min(
+            100,
+            Math.max(
+                0,
+                Number(
+                    data.progress || 0
+                )
+            )
+        );
+
+    } catch {
+
+        return 0;
+
+    }
+
+}
+
+
+/* ==========================================================
+   OPEN BOOK
+========================================================== */
+
+function openBook(
+    bookId
+) {
+
+    const book =
+        allBooks.find(
+            b =>
+                b.id === bookId
+        );
+
+
+    if (!book) {
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        "currentBook",
+        JSON.stringify(
+            book
+        )
+    );
+
+
+    // Reading history
+    let history = [];
+
+    try {
+
+        history =
+            JSON.parse(
+                localStorage.getItem(
+                    "readingHistory"
+                ) || "[]"
+            );
+
+    } catch {
+
+        history = [];
+
+    }
+
+
+    history =
+        history.filter(
+            item =>
+                item.id !== book.id
+        );
+
+
+    history.unshift({
+
+        id: book.id,
+
+        title: book.title,
+
+        type: book.type,
+
+        openedAt:
+            new Date().toISOString()
+
+    });
+
+
+    // Keep last 50
+    history =
+        history.slice(
+            0,
+            50
+        );
+
+
+    localStorage.setItem(
+        "readingHistory",
+        JSON.stringify(
+            history
+        )
+    );
+
+
+    window.location.href =
+        "/reader";
+
+}
+
+
+/* ==========================================================
+   UPDATE LIBRARY
+========================================================== */
+
+async function checkForUpdates() {
+
+    const button =
+        document.getElementById(
+            "updateButton"
+        );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Checking...";
+
+
+    await loadBooks(
+        false
+    );
+
+
+    button.disabled = false;
+
+    button.textContent =
+        "↻ Check Updates";
+
+}
+
+
+/* ==========================================================
+   CHANGE LIBRARY
+========================================================== */
+
+function changeLibrary() {
+
+    window.location.href =
+        "/setup";
+
+}
+
+
+/* ==========================================================
+   GRID / LIST
+========================================================== */
+
+function setView(
+    view
+) {
+
+    currentView =
+        view;
+
+
+    document.getElementById(
+        "gridButton"
+    ).classList.toggle(
+        "active",
+        view === "grid"
+    );
+
+
+    document.getElementById(
+        "listButton"
+    ).classList.toggle(
+        "active",
+        view === "list"
+    );
+
+
+    localStorage.setItem(
+        "bookshelfView",
+        view
+    );
+
+
+    displayBooks(
+        allBooks
+    );
+
+}
+
+
+/* ==========================================================
+   SEARCH
+========================================================== */
+
+document.getElementById(
+    "search"
+).addEventListener(
+    "input",
+    function() {
+
+        displayBooks(
+            allBooks
+        );
+
+    }
+);
+
+
+/* ==========================================================
+   ESCAPE HTML
+========================================================== */
+
+function escapeHtml(
+    text
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        text || "";
+
+    return div.innerHTML;
+
+}
+
+
+function escapeAttribute(
+    text
+) {
+
+    return String(
+        text || ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#39;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    );
+
+}
+
+
+/* ==========================================================
+   INITIALIZE
+========================================================== */
+
+const savedView =
+    localStorage.getItem(
+        "bookshelfView"
+    );
+
+
+if (
+    savedView === "list"
+) {
+
+    currentView = "list";
+
+    document.getElementById(
+        "gridButton"
+    ).classList.remove(
+        "active"
+    );
+
+    document.getElementById(
+        "listButton"
+    ).classList.add(
+        "active"
+    );
+
+}
+
+
+loadBooks();
+
+</script>
+
 
 </body>
+
 </html>
