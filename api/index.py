@@ -4,10 +4,6 @@ import re
 import os
 
 
-# ============================================================
-# FLASK APPLICATION
-# ============================================================
-
 app = Flask(
     __name__,
     template_folder="../templates",
@@ -19,19 +15,7 @@ app = Flask(
 # GOOGLE DRIVE CONFIGURATION
 # ============================================================
 
-# This comes from Vercel Environment Variables.
-#
-# Vercel:
-# Project
-#   -> Settings
-#   -> Environment Variables
-#
-# Name:
-# GOOGLE_DRIVE_API_KEY
-#
-DRIVE_API_KEY = os.getenv(
-    "GOOGLE_DRIVE_API_KEY"
-)
+DRIVE_API_KEY = os.getenv("GOOGLE_DRIVE_API_KEY")
 
 DRIVE_API_URL = (
     "https://www.googleapis.com/drive/v3/files"
@@ -39,31 +23,85 @@ DRIVE_API_URL = (
 
 
 # ============================================================
-# EXTRACT DRIVE FOLDER ID
+# EXTRACT FOLDER ID
 # ============================================================
 
-def extract_folder_id(url):
+def extract_folder_id(value):
 
-    if not url:
+    if not value:
         return None
 
-    url = url.strip()
+    value = value.strip()
 
-    # Standard Drive folder URL
+    print("Received folder value:")
+    print(value)
+
+    # --------------------------------------------------------
+    # Standard Google Drive folder URL
+    #
+    # https://drive.google.com/drive/folders/FOLDER_ID
+    # --------------------------------------------------------
+
     match = re.search(
-        r"/folders/([a-zA-Z0-9_-]+)",
-        url
+        r"drive\.google\.com/drive/folders/([a-zA-Z0-9_-]+)",
+        value
     )
 
     if match:
-        return match.group(1)
 
-    # Allow just the folder ID
+        folder_id = match.group(1)
+
+        print(
+            "Extracted folder ID:",
+            folder_id
+        )
+
+        return folder_id
+
+
+    # --------------------------------------------------------
+    # Also support:
+    #
+    # https://drive.google.com/open?id=FOLDER_ID
+    # --------------------------------------------------------
+
+    match = re.search(
+        r"[?&]id=([a-zA-Z0-9_-]+)",
+        value
+    )
+
+    if match:
+
+        folder_id = match.group(1)
+
+        print(
+            "Extracted folder ID:",
+            folder_id
+        )
+
+        return folder_id
+
+
+    # --------------------------------------------------------
+    # If user supplied only the ID
+    # --------------------------------------------------------
+
     if re.fullmatch(
         r"[a-zA-Z0-9_-]+",
-        url
+        value
     ):
-        return url
+
+        print(
+            "Input itself is folder ID:",
+            value
+        )
+
+        return value
+
+
+    print(
+        "Could not extract folder ID"
+    )
 
     return None
 
@@ -77,23 +115,30 @@ def get_drive_files(folder_id):
     if not DRIVE_API_KEY:
 
         raise RuntimeError(
-            "GOOGLE_DRIVE_API_KEY is not configured in Vercel."
+            "GOOGLE_DRIVE_API_KEY is not configured."
         )
 
-    files = []
+
+    all_files = []
 
     page_token = None
+
 
     while True:
 
         params = {
 
-            "q": (
+            "q":
                 f"'{folder_id}' in parents "
-                "and trashed = false"
-            ),
+                "and trashed = false",
 
-            "fields": (
+            "key":
+                DRIVE_API_KEY,
+
+            "pageSize":
+                1000,
+
+            "fields":
                 "nextPageToken,"
                 "files("
                 "id,"
@@ -104,15 +149,19 @@ def get_drive_files(folder_id):
                 "webViewLink,"
                 "thumbnailLink"
                 ")"
-            ),
 
-            "pageSize": 1000,
-
-            "key": DRIVE_API_KEY
         }
 
+
         if page_token:
+
             params["pageToken"] = page_token
+
+
+        print()
+        print(
+            "=========================================="
+        )
 
         print(
             "Google Drive request"
@@ -123,77 +172,103 @@ def get_drive_files(folder_id):
             folder_id
         )
 
+
         response = requests.get(
             DRIVE_API_URL,
             params=params,
-            timeout=20
+            timeout=30
         )
 
+
         print(
-            "Google Drive status:",
+            "HTTP status:",
             response.status_code
         )
 
+
         print(
-            "Google Drive response:",
+            "Response:"
+        )
+
+        print(
             response.text
         )
 
-        if not response.ok:
+
+        if response.status_code != 200:
 
             try:
-                error_data = response.json()
+
+                error_data = (
+                    response.json()
+                )
+
             except Exception:
-                error_data = response.text
+
+                error_data = (
+                    response.text
+                )
+
 
             raise RuntimeError(
-                "Google Drive API error "
-                f"({response.status_code}): "
-                f"{error_data}"
+                "Google Drive API rejected "
+                f"the request: {error_data}"
             )
+
 
         data = response.json()
 
-        returned_files = data.get(
+
+        files = data.get(
             "files",
             []
         )
 
+
         print(
             "Files returned:",
-            len(returned_files)
+            len(files)
         )
 
-        for file in returned_files:
+
+        for file in files:
 
             print(
-                "FILE:",
+                " -",
                 file.get("name"),
-                "| MIME:",
-                file.get("mimeType")
+                "|",
+                file.get("mimeType"),
+                "|",
+                file.get("id")
             )
 
-        files.extend(
-            returned_files
+
+        all_files.extend(
+            files
         )
+
 
         page_token = data.get(
             "nextPageToken"
         )
 
+
         if not page_token:
+
             break
 
-    return files
+
+    return all_files
 
 
 # ============================================================
-# CONVERT DRIVE FILES TO BOOKS
+# CREATE BOOK LIST
 # ============================================================
 
-def create_books_json(files):
+def create_books(files):
 
     books = []
+
 
     for file in files:
 
@@ -202,87 +277,176 @@ def create_books_json(files):
             ""
         )
 
-        lower_name = name.lower()
-
-        # Ignore books.json and every other file.
-        if lower_name.endswith(".pdf"):
-
-            book_type = "pdf"
-
-        elif lower_name.endswith(".epub"):
-
-            book_type = "epub"
-
-        else:
-
-            continue
-
         file_id = file.get(
             "id"
         )
 
+        mime_type = file.get(
+            "mimeType",
+            ""
+        )
+
+
         if not file_id:
+
             continue
+
+
+        # ====================================================
+        # PDF
+        # ====================================================
+
+        is_pdf = (
+            mime_type == "application/pdf"
+            or name.lower().endswith(".pdf")
+        )
+
+
+        # ====================================================
+        # EPUB
+        # ====================================================
+
+        is_epub = (
+            mime_type
+            in [
+                "application/epub+zip",
+                "application/epub",
+            ]
+            or name.lower().endswith(".epub")
+        )
+
+
+        # Ignore everything else
+        #
+        # This automatically ignores:
+        # books.json
+        # folders
+        # images
+        # documents
+        # etc.
+        #
+
+        if not is_pdf and not is_epub:
+
+            print(
+                "Ignoring:",
+                name,
+                "|",
+                mime_type
+            )
+
+            continue
+
+
+        if is_pdf:
+
+            book_type = "pdf"
+
+        else:
+
+            book_type = "epub"
+
+
+        title = name
+
+
+        if "." in title:
+
+            title = title.rsplit(
+                ".",
+                1
+            )[0]
+
+
+        # Direct Google Drive download URL
 
         download_url = (
             "https://drive.google.com/uc"
             f"?export=download&id={file_id}"
         )
 
+
         book = {
 
-            "id": file_id,
+            "id":
+                file_id,
 
-            "title": name.rsplit(
-                ".",
-                1
-            )[0],
+            "title":
+                title,
 
-            "filename": name,
+            "filename":
+                name,
 
-            "type": book_type,
+            "type":
+                book_type,
 
-            "link": download_url,
+            "link":
+                download_url,
 
-            "driveLink": file.get(
-                "webViewLink",
-                ""
-            ),
+            "driveLink":
+                file.get(
+                    "webViewLink",
+                    ""
+                ),
 
-            "thumbnail": file.get(
-                "thumbnailLink",
-                ""
-            ),
+            "thumbnail":
+                file.get(
+                    "thumbnailLink",
+                    ""
+                ),
 
-            "modifiedTime": file.get(
-                "modifiedTime",
-                ""
-            ),
+            "modifiedTime":
+                file.get(
+                    "modifiedTime",
+                    ""
+                ),
 
-            "size": file.get(
-                "size",
-                ""
-            )
+            "size":
+                file.get(
+                    "size",
+                    ""
+                )
 
         }
 
-        books.append(book)
+
+        books.append(
+            book
+        )
+
 
     books.sort(
         key=lambda book:
         book["title"].lower()
     )
 
+
+    print()
     print(
-        "Books created:",
+        "=========================================="
+    )
+
+    print(
+        "FINAL BOOK COUNT:",
         len(books)
     )
+
+
+    for book in books:
+
+        print(
+            "BOOK:",
+            book["title"],
+            "|",
+            book["type"]
+        )
+
 
     return books
 
 
 # ============================================================
-# HOME / BOOKSHELF
+# HOME
 # ============================================================
 
 @app.route("/")
@@ -294,7 +458,7 @@ def home():
 
 
 # ============================================================
-# SETUP PAGE
+# SETUP
 # ============================================================
 
 @app.route("/setup")
@@ -306,7 +470,7 @@ def setup():
 
 
 # ============================================================
-# READER PAGE
+# READER
 # ============================================================
 
 @app.route("/reader")
@@ -325,8 +489,25 @@ def reader():
 def library():
 
     folder_url = request.args.get(
-        "folder"
+        "folder",
+        ""
     )
+
+
+    print()
+    print(
+        "=========================================="
+    )
+
+    print(
+        "LIBRARY REQUEST"
+    )
+
+    print(
+        "Folder URL:",
+        folder_url
+    )
+
 
     if not folder_url:
 
@@ -335,13 +516,15 @@ def library():
             "success": False,
 
             "error":
-                "Google Drive folder URL is required."
+                "No Google Drive folder was supplied."
 
         }), 400
+
 
     folder_id = extract_folder_id(
         folder_url
     )
+
 
     if not folder_id:
 
@@ -350,30 +533,37 @@ def library():
             "success": False,
 
             "error":
-                "Invalid Google Drive folder URL.",
+                "Could not extract a valid Google Drive folder ID.",
 
             "received":
                 folder_url
 
         }), 400
 
+
     try:
 
         files = get_drive_files(
             folder_id
         )
 
-        books = create_books_json(
+
+        books = create_books(
             files
         )
 
+
         return jsonify({
 
-            "success": True,
+            "success":
+                True,
 
             "folderId":
                 folder_id,
 
+            "filesFound":
+                len(files),
+
             "count":
                 len(books),
 
@@ -382,90 +572,25 @@ def library():
 
         })
 
-    except Exception as e:
+
+    except Exception as error:
 
         print(
             "LIBRARY ERROR:",
-            str(e)
+            str(error)
         )
 
+
         return jsonify({
 
-            "success": False,
+            "success":
+                False,
 
             "error":
-                str(e)
+                str(error),
 
-        }), 500
-
-
-# ============================================================
-# BOOKS.JSON ENDPOINT
-# ============================================================
-
-@app.route("/api/books.json")
-def books_json():
-
-    folder_url = request.args.get(
-        "folder"
-    )
-
-    if not folder_url:
-
-        return jsonify({
-
-            "success": False,
-
-            "error":
-                "Google Drive folder URL is required."
-
-        }), 400
-
-    folder_id = extract_folder_id(
-        folder_url
-    )
-
-    if not folder_id:
-
-        return jsonify({
-
-            "success": False,
-
-            "error":
-                "Invalid Google Drive folder URL."
-
-        }), 400
-
-    try:
-
-        files = get_drive_files(
-            folder_id
-        )
-
-        books = create_books_json(
-            files
-        )
-
-        return jsonify({
-
-            "success": True,
-
-            "count":
-                len(books),
-
-            "books":
-                books
-
-        })
-
-    except Exception as e:
-
-        return jsonify({
-
-            "success": False,
-
-            "error":
-                str(e)
+            "folderId":
+                folder_id
 
         }), 500
 
@@ -482,18 +607,20 @@ def health():
         "status":
             "ok",
 
-        "drive_api_key_configured":
+        "apiKeyConfigured":
             bool(DRIVE_API_KEY)
 
     })
 
 
 # ============================================================
-# RUN LOCALLY
+# LOCAL DEVELOPMENT
 # ============================================================
 
 if __name__ == "__main__":
 
     app.run(
+        host="0.0.0.0",
+        port=5000,
         debug=True
     )
