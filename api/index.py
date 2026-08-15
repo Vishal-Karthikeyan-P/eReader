@@ -235,7 +235,7 @@ def library():
             "error": "Google Drive API rejected the request",
             "status": status_code,
             "googleResponse": google_error
-        }), 500
+        }), e.response.status_code
 
     except requests.exceptions.RequestException as e:
 
