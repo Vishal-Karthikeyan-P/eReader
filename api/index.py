@@ -41,9 +41,11 @@ def extract_folder_id(url):
 
 
 def get_drive_files(folder_id):
-    """
-    Retrieve files from a public Google Drive folder.
-    """
+
+    if not DRIVE_API_KEY:
+        raise RuntimeError(
+            "GOOGLE_DRIVE_API_KEY is not configured"
+        )
 
     files = []
     page_token = None
@@ -55,12 +57,23 @@ def get_drive_files(folder_id):
                 f"'{folder_id}' in parents "
                 "and trashed = false"
             ),
+
             "fields": (
                 "nextPageToken,"
-                "files(id,name,mimeType,size,modifiedTime,"
-                "webViewLink,thumbnailLink)"
+                "files("
+                "id,"
+                "name,"
+                "mimeType,"
+                "size,"
+                "modifiedTime,"
+                "webViewLink,"
+                "thumbnailLink,"
+                "resourceKey"
+                ")"
             ),
+
             "pageSize": 1000,
+
             "key": DRIVE_API_KEY
         }
 
@@ -73,13 +86,24 @@ def get_drive_files(folder_id):
             timeout=20
         )
 
+        # Print the Google response in Vercel logs
+        print(
+            "Google Drive response:",
+            response.status_code,
+            response.text
+        )
+
         response.raise_for_status()
 
         data = response.json()
 
-        files.extend(data.get("files", []))
+        files.extend(
+            data.get("files", [])
+        )
 
-        page_token = data.get("nextPageToken")
+        page_token = data.get(
+            "nextPageToken"
+        )
 
         if not page_token:
             break
