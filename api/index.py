@@ -15,6 +15,8 @@ if not DRIVE_API_KEY:
     raise RuntimeError(
         "GOOGLE_DRIVE_API_KEY environment variable is missing"
     )
+
+DRIVE_API_URL = "https://www.googleapis.com/drive/v3/files"
 def extract_folder_id(url):
     """
     Extract Google Drive folder ID from URLs such as:
