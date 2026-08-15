@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import requests
 import re
+import os
 
 app = Flask(
     __name__,
@@ -8,11 +9,7 @@ app = Flask(
     static_folder="../static"
 )
 
-# Put your Google Drive API key here temporarily.
-# For Vercel, it is better to use an environment variable.
-DRIVE_API_KEY = "YOUR_GOOGLE_DRIVE_API_KEY"
-
-DRIVE_API_URL = "https://www.googleapis.com/drive/v3/files"
+DRIVE_API_KEY = os.getenv("GOOGLE_DRIVE_API_KEY")
 
 
 def extract_folder_id(url):
