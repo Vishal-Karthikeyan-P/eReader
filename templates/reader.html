@@ -1510,32 +1510,50 @@ async function initialize() {
 
 function getPDFUrl() {
 
+    /*
+       New books from the backend will contain:
+
+       download_url: "/api/file/GOOGLE_FILE_ID"
+
+       This is a same-origin URL, so PDF.js doesn't
+       have to directly access Google Drive.
+    */
+
     if (
-        book.download_url &&
-        String(book.download_url).trim()
+        book &&
+        book.download_url
     ) {
 
         return book.download_url;
 
     }
 
+
+    /*
+       Handle older localStorage objects that don't
+       have download_url.
+
+       We can reconstruct the new proxy URL using
+       the Google Drive file ID.
+    */
+
     if (
-        book.downloadUrl &&
-        String(book.downloadUrl).trim()
+        book &&
+        book.id
     ) {
 
-        return book.downloadUrl;
+        return (
+            "/api/file/" +
+            encodeURIComponent(
+                book.id
+            )
+        );
 
     }
 
-    console.error(
-        "No download_url found in book object:",
-        book
-    );
 
     return null;
 }
-
 /* =========================================================
    OPEN PDF
 ========================================================= */
