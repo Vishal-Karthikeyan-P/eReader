@@ -162,7 +162,7 @@ def library():
     if not folder_url:
         return jsonify({
             "success": False,
-            "error": "Drive folder URL is required"
+            "error": "Google Drive folder URL is required"
         }), 400
 
     folder_id = extract_folder_id(folder_url)
@@ -170,8 +170,15 @@ def library():
     if not folder_id:
         return jsonify({
             "success": False,
-            "error": "Invalid Google Drive folder URL"
+            "error": "Invalid Google Drive folder URL",
+            "received": folder_url
         }), 400
+
+    if not DRIVE_API_KEY:
+        return jsonify({
+            "success": False,
+            "error": "GOOGLE_DRIVE_API_KEY is missing from Vercel Environment Variables"
+        }), 500
 
     try:
 
@@ -186,11 +193,31 @@ def library():
             "count": len(books)
         })
 
+    except requests.exceptions.HTTPError as e:
+
+        status_code = (
+            e.response.status_code
+            if e.response is not None
+            else 500
+        )
+
+        try:
+            google_error = e.response.json()
+        except Exception:
+            google_error = e.response.text
+
+        return jsonify({
+            "success": False,
+            "error": "Google Drive API rejected the request",
+            "status": status_code,
+            "googleResponse": google_error
+        }), 500
+
     except requests.exceptions.RequestException as e:
 
         return jsonify({
             "success": False,
-            "error": "Unable to access Google Drive",
+            "error": "Could not connect to Google Drive API",
             "details": str(e)
         }), 500
 
@@ -200,7 +227,6 @@ def library():
             "success": False,
             "error": str(e)
         }), 500
-
 
 @app.route("/api/books.json")
 def books_json():
