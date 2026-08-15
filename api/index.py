@@ -11,7 +11,10 @@ app = Flask(
 
 DRIVE_API_KEY = os.getenv("GOOGLE_DRIVE_API_KEY")
 
-
+if not DRIVE_API_KEY:
+    raise RuntimeError(
+        "GOOGLE_DRIVE_API_KEY environment variable is missing"
+    )
 def extract_folder_id(url):
     """
     Extract Google Drive folder ID from URLs such as:
