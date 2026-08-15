@@ -10,13 +10,17 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Connect Library - Book Reader</title>
+    <title>
+        Connect Library - Book Reader
+    </title>
+
 
     <style>
 
         * {
             box-sizing: border-box;
         }
+
 
         body {
 
@@ -41,32 +45,32 @@
             background:
                 linear-gradient(
                     135deg,
-                    #f7f8fc,
+                    #f6f7fb,
                     #eef1f8
                 );
 
-            color: #171923;
+            color: #111827;
 
         }
 
+
         .container {
 
-            width: min(
-                92%,
-                620px
-            );
+            width:
+                min(92%, 620px);
 
             background: white;
 
-            padding: 45px;
+            padding: 46px;
 
             border-radius: 24px;
 
             box-shadow:
                 0 20px 60px
-                rgba(0, 0, 0, 0.10);
+                rgba(0, 0, 0, .10);
 
         }
+
 
         .logo {
 
@@ -82,33 +86,41 @@
 
             background: #111827;
 
-            color: white;
-
             border-radius: 18px;
+
+            margin-bottom: 28px;
+
+        }
+
+
+        .logo span {
 
             font-size: 30px;
 
-            margin-bottom: 25px;
-
         }
+
 
         h1 {
 
-            margin: 0 0 10px;
+            margin: 0 0 12px;
 
             font-size: 32px;
 
-        }
-
-        .subtitle {
-
-            color: #6b7280;
-
-            line-height: 1.6;
-
-            margin-bottom: 30px;
+            letter-spacing: -1px;
 
         }
+
+
+        .description {
+
+            color: #687084;
+
+            line-height: 1.65;
+
+            margin-bottom: 32px;
+
+        }
+
 
         label {
 
@@ -120,23 +132,23 @@
 
         }
 
+
         input {
 
             width: 100%;
 
-            padding: 15px 16px;
+            padding: 15px;
 
-            border: 1px solid #d7dbe5;
+            border: 1px solid #d9dde7;
 
             border-radius: 12px;
 
-            font-size: 15px;
-
             outline: none;
 
-            transition: 0.2s;
+            font-size: 14px;
 
         }
+
 
         input:focus {
 
@@ -144,9 +156,10 @@
 
             box-shadow:
                 0 0 0 4px
-                rgba(99, 102, 241, 0.12);
+                rgba(99,102,241,.12);
 
         }
+
 
         button {
 
@@ -166,39 +179,45 @@
 
             font-size: 15px;
 
-            font-weight: 600;
+            font-weight: 700;
 
             cursor: pointer;
 
         }
 
+
         button:hover {
 
-            background: #252d3d;
+            background: #252c3b;
 
         }
 
+
         button:disabled {
 
-            opacity: 0.6;
+            opacity: .6;
 
             cursor: wait;
 
         }
 
+
         .message {
 
             margin-top: 18px;
 
-            padding: 13px;
+            padding: 14px;
 
             border-radius: 10px;
 
             display: none;
 
-            line-height: 1.5;
+            line-height: 1.55;
+
+            font-size: 14px;
 
         }
+
 
         .error {
 
@@ -210,6 +229,7 @@
 
         }
 
+
         .success {
 
             display: block;
@@ -220,13 +240,37 @@
 
         }
 
+
+        .debug {
+
+            margin-top: 12px;
+
+            padding: 12px;
+
+            border-radius: 8px;
+
+            background: #f4f5f7;
+
+            color: #4b5563;
+
+            font-family: monospace;
+
+            font-size: 12px;
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+
+        }
+
+
         .hint {
 
-            margin-top: 20px;
+            margin-top: 22px;
+
+            color: #7a8293;
 
             font-size: 13px;
-
-            color: #737b8c;
 
             line-height: 1.6;
 
@@ -242,8 +286,13 @@
 
 <div class="container">
 
+
     <div class="logo">
-        📚
+
+        <span>
+            📚
+        </span>
+
     </div>
 
 
@@ -252,7 +301,7 @@
     </h1>
 
 
-    <p class="subtitle">
+    <p class="description">
 
         Enter the link to your public Google Drive
         folder containing your PDF and EPUB books.
@@ -265,15 +314,19 @@
 
     <form id="setupForm">
 
+
         <label for="folderUrl">
+
             Google Drive Folder
+
         </label>
 
 
         <input
             id="folderUrl"
-            type="url"
+            type="text"
             placeholder="https://drive.google.com/drive/folders/..."
+            autocomplete="off"
             required
         >
 
@@ -282,7 +335,9 @@
             id="connectButton"
             type="submit"
         >
+
             Connect Library
+
         </button>
 
 
@@ -295,15 +350,28 @@
     ></div>
 
 
+    <div
+        id="debug"
+        class="debug"
+        style="display:none"
+    ></div>
+
+
     <div class="hint">
 
         Make sure the folder is shared as
-        <strong>Anyone with the link → Viewer</strong>.
+
+        <strong>
+            Anyone with the link → Viewer
+        </strong>
+
+        <br>
 
         Only PDF and EPUB files directly inside
-        this folder will be displayed.
+        this folder are loaded.
 
     </div>
+
 
 </div>
 
@@ -315,15 +383,18 @@ const form =
         "setupForm"
     );
 
-const folderInput =
+
+const input =
     document.getElementById(
         "folderUrl"
     );
+
 
 const button =
     document.getElementById(
         "connectButton"
     );
+
 
 const message =
     document.getElementById(
@@ -331,19 +402,33 @@ const message =
     );
 
 
-// Restore saved folder
-const savedFolder =
+const debug =
+    document.getElementById(
+        "debug"
+    );
+
+
+// ==========================================================
+// RESTORE SAVED FOLDER
+// ==========================================================
+
+const saved =
     localStorage.getItem(
         "driveFolder"
     );
 
-if (savedFolder) {
 
-    folderInput.value =
-        savedFolder;
+if (saved) {
+
+    input.value =
+        saved;
 
 }
 
+
+// ==========================================================
+// CONNECT
+// ==========================================================
 
 form.addEventListener(
     "submit",
@@ -351,38 +436,73 @@ form.addEventListener(
 
         event.preventDefault();
 
-        const folderUrl =
-            folderInput.value.trim();
 
-        if (!folderUrl) {
+        const folder =
+            input.value.trim();
+
+
+        if (!folder) {
+
             return;
+
         }
 
-        button.disabled = true;
+
+        button.disabled =
+            true;
+
 
         button.textContent =
-            "Checking folder...";
+            "Checking Google Drive...";
 
-        message.className =
-            "message";
 
         message.style.display =
             "none";
 
 
+        debug.style.display =
+            "none";
+
+
         try {
+
+
+            const url =
+                "/api/library?folder=" +
+                encodeURIComponent(
+                    folder
+                );
+
+
+            console.log(
+                "Requesting:",
+                url
+            );
+
 
             const response =
                 await fetch(
-                    "/api/library?folder=" +
-                    encodeURIComponent(
-                        folderUrl
-                    )
+                    url,
+                    {
+                        cache:
+                            "no-store"
+                    }
                 );
+
 
             const data =
                 await response.json();
 
+
+            console.log(
+                "API response:",
+                data
+            );
+
+
+            // ------------------------------------------------
+            // API ERROR
+            // ------------------------------------------------
 
             if (
                 !response.ok ||
@@ -391,32 +511,85 @@ form.addEventListener(
 
                 throw new Error(
                     data.error ||
-                    "Unable to access Google Drive"
+                    "Google Drive request failed."
                 );
 
             }
 
+
+            // ------------------------------------------------
+            // NO FILES
+            // ------------------------------------------------
+
+            if (
+                !data.filesFound
+            ) {
+
+                throw new Error(
+                    "Google Drive returned 0 files."
+                );
+
+            }
+
+
+            // ------------------------------------------------
+            // FILES BUT NO BOOKS
+            // ------------------------------------------------
 
             if (
                 !data.books ||
                 data.books.length === 0
             ) {
 
-                throw new Error(
-                    "No PDF or EPUB books were found in this folder."
-                );
+
+                message.className =
+                    "message error";
+
+
+                message.style.display =
+                    "block";
+
+
+                message.innerHTML =
+                    "❌ Google Drive was accessed successfully, " +
+                    "but no PDF or EPUB files were found.";
+
+
+                debug.style.display =
+                    "block";
+
+
+                debug.textContent =
+                    JSON.stringify(
+                        data,
+                        null,
+                        2
+                    );
+
+
+                button.disabled =
+                    false;
+
+
+                button.textContent =
+                    "Connect Library";
+
+
+                return;
 
             }
 
 
-            // Save folder permanently
+            // ------------------------------------------------
+            // SUCCESS
+            // ------------------------------------------------
+
             localStorage.setItem(
                 "driveFolder",
-                folderUrl
+                folder
             );
 
 
-            // Save current library
             localStorage.setItem(
                 "books",
                 JSON.stringify(
@@ -425,14 +598,24 @@ form.addEventListener(
             );
 
 
+            localStorage.setItem(
+                "libraryLastChecked",
+                new Date().toISOString()
+            );
+
+
             message.className =
                 "message success";
+
 
             message.style.display =
                 "block";
 
+
             message.textContent =
-                `${data.books.length} books found. Opening bookshelf...`;
+                "✓ " +
+                data.books.length +
+                " books found. Opening bookshelf...";
 
 
             setTimeout(
@@ -448,23 +631,30 @@ form.addEventListener(
 
         } catch (error) {
 
+
             console.error(
                 error
             );
 
+
             message.className =
                 "message error";
+
 
             message.style.display =
                 "block";
 
-            message.textContent =
+
+            message.innerHTML =
                 "❌ " +
-                error.message;
+                escapeHtml(
+                    error.message
+                );
 
 
             button.disabled =
                 false;
+
 
             button.textContent =
                 "Connect Library";
@@ -473,6 +663,27 @@ form.addEventListener(
 
     }
 );
+
+
+// ==========================================================
+// ESCAPE
+// ==========================================================
+
+function escapeHtml(
+    value
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        value || "";
+
+    return div.innerHTML;
+
+}
 
 </script>
 
