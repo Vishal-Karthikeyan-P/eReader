@@ -147,7 +147,10 @@ def get_books_from_drive(folder_id):
             "name": name,
             "type": file_type,
             "link": view_url,
-            "download_url": download_url,
+           "download_url": (
+                f"https://www.googleapis.com/drive/v3/files/"
+                f"{file_id}?alt=media&key={DRIVE_API_KEY}"
+            ),
             "thumbnail": file.get("thumbnailLink"),
             "modifiedTime": file.get("modifiedTime"),
             "size": file.get("size")
