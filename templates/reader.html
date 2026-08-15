@@ -3,55 +3,1731 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Book Reader</title>
+<title>Reader</title>
 
-    <link rel="stylesheet"
-          href="/static/css/style.css">
+
+<!-- PDF.JS -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs"
+        type="module">
+</script>
+
+
+<!-- EPUB.JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js">
+</script>
+
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+
+    margin: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    overflow: hidden;
+
+    font-family:
+        Inter,
+        system-ui,
+        sans-serif;
+
+    background: #111827;
+
+    color: white;
+}
+
+
+.reader {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar {
+
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        8px 14px;
+
+    background: #111827;
+
+    border-bottom:
+        1px solid #2c3443;
+}
+
+
+.back {
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+}
+
+
+.title {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.title strong {
+
+    display: block;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.title small {
+
+    color: #9ca3af;
+
+}
+
+
+.controls {
+
+    display: flex;
+
+    gap: 5px;
+
+}
+
+
+.controls button {
+
+    border: 1px solid #374151;
+
+    background: #1f2937;
+
+    color: white;
+
+    padding:
+        7px 10px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+}
+
+
+.controls button:hover {
+
+    background: #374151;
+
+}
+
+
+/* =========================================================
+   READER AREA
+========================================================= */
+
+.reader-area {
+
+    position: relative;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow: hidden;
+
+    background: #374151;
+
+}
+
+
+/* PDF */
+
+#pdfContainer {
+
+    width: 100%;
+
+    height: 100%;
+
+    overflow: auto;
+
+    display: flex;
+
+    justify-content: center;
+
+    padding: 25px;
+
+}
+
+
+#pdfCanvas {
+
+    background: white;
+
+    box-shadow:
+        0 5px 25px
+        rgba(0,0,0,.4);
+
+    align-self: flex-start;
+
+}
+
+
+/* EPUB */
+
+#epubContainer {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: none;
+
+    background: #fff;
+
+}
+
+
+#epubViewer {
+
+    width: 100%;
+
+    height: 100%;
+
+}
+
+
+/* =========================================================
+   BOTTOM BAR
+========================================================= */
+
+.bottombar {
+
+    height: 55px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    background: #111827;
+
+    border-top:
+        1px solid #2c3443;
+
+}
+
+
+.bottombar button {
+
+    border: 1px solid #374151;
+
+    background: #1f2937;
+
+    color: white;
+
+    padding:
+        7px 12px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+}
+
+
+.bottombar span {
+
+    min-width: 90px;
+
+    text-align: center;
+
+    color: #d1d5db;
+
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.message {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 25px;
+
+    text-align: center;
+
+}
+
+
+.message-box {
+
+    max-width: 500px;
+
+    padding: 30px;
+
+    background: #1f2937;
+
+    border:
+        1px solid #374151;
+
+    border-radius: 16px;
+
+}
+
+
+.message-box h2 {
+
+    margin-top: 0;
+
+}
+
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+body.light .reader-area {
+
+    background: #e5e7eb;
+
+}
+
+
+body.dark .reader-area {
+
+    background: #111827;
+
+}
+
+
+body.sepia .reader-area {
+
+    background: #d9c8a5;
+
+}
+
+
+body.sepia #epubContainer {
+
+    background: #f4ecd8;
+
+}
+
+
+body.sepia {
+
+    color: #3e3526;
+
+}
+
+
+/* =========================================================
+   EPUB OPTIONS
+========================================================= */
+
+.epub-options {
+
+    position: absolute;
+
+    right: 15px;
+
+    top: 15px;
+
+    z-index: 20;
+
+    display: none;
+
+    width: 230px;
+
+    padding: 18px;
+
+    background: #1f2937;
+
+    border:
+        1px solid #374151;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 15px 40px
+        rgba(0,0,0,.35);
+}
+
+
+.epub-options label {
+
+    display: block;
+
+    margin:
+        12px 0 6px;
+
+    color: #d1d5db;
+
+    font-size: 13px;
+}
+
+
+.epub-options input {
+
+    width: 100%;
+}
+
+
+@media(max-width:700px) {
+
+    .controls button {
+
+        padding:
+            7px 8px;
+
+        font-size: 12px;
+    }
+
+    .title small {
+
+        display: none;
+    }
+
+}
+
+</style>
 
 </head>
 
-<body class="reader-page">
 
-<header class="reader-toolbar">
+<body>
 
-    <button onclick="goBack()">
-        ← Library
+
+<div class="reader">
+
+
+<!-- =======================================================
+     TOP BAR
+======================================================= -->
+
+<div class="topbar">
+
+
+    <button
+        class="back"
+        onclick="goBack()"
+    >
+        ←
     </button>
 
-    <h2 id="bookTitle">
-        Loading...
-    </h2>
 
-    <div class="reader-actions">
+    <div class="title">
 
-        <button onclick="toggleDarkMode()">
-            ◐
+        <strong id="bookTitle">
+            Loading...
+        </strong>
+
+        <small id="bookType">
+            Loading...
+        </small>
+
+    </div>
+
+
+    <div class="controls">
+
+        <button
+            onclick="zoomOut()"
+            id="zoomOutButton"
+        >
+            −
         </button>
 
-        <button onclick="toggleFullscreen()">
+        <button
+            onclick="zoomIn()"
+            id="zoomInButton"
+        >
+            +
+        </button>
+
+        <button
+            onclick="rotate()"
+            id="rotateButton"
+        >
+            ↻
+        </button>
+
+        <button
+            onclick="toggleFullscreen()"
+        >
             ⛶
         </button>
 
+        <button
+            onclick="toggleTheme()"
+        >
+            ☾
+        </button>
+
+        <button
+            onclick="toggleEpubOptions()"
+            id="optionsButton"
+            style="display:none"
+        >
+            Aa
+        </button>
+
     </div>
 
-</header>
+
+</div>
 
 
-<main id="reader">
+<!-- =======================================================
+     READER AREA
+======================================================= -->
 
-    <div class="reader-loading">
-        Loading book...
+<div
+    class="reader-area"
+    id="readerArea"
+>
+
+
+    <!-- PDF -->
+
+    <div id="pdfContainer">
+
+        <canvas
+            id="pdfCanvas"
+        ></canvas>
+
     </div>
 
-</main>
+
+    <!-- EPUB -->
+
+    <div id="epubContainer">
+
+        <div
+            id="epubViewer"
+        ></div>
 
 
-<script src="/static/js/reader.js"></script>
+        <div
+            class="epub-options"
+            id="epubOptions"
+        >
+
+            <label>
+                Font Size
+            </label>
+
+            <input
+                type="range"
+                min="80"
+                max="180"
+                value="100"
+                id="fontSize"
+            >
+
+
+            <label>
+                Line Spacing
+            </label>
+
+            <input
+                type="range"
+                min="100"
+                max="220"
+                value="150"
+                id="lineSpacing"
+            >
+
+
+            <label>
+                Margins
+            </label>
+
+            <input
+                type="range"
+                min="0"
+                max="120"
+                value="30"
+                id="margins"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        class="message"
+        id="message"
+        style="display:none"
+    >
+
+        <div class="message-box">
+
+            <h2>
+                Unable to open book
+            </h2>
+
+            <p id="messageText"></p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- =======================================================
+     BOTTOM BAR
+======================================================= -->
+
+<div class="bottombar">
+
+
+    <button
+        id="previousButton"
+        onclick="previousPage()"
+    >
+        ←
+    </button>
+
+
+    <span id="pageInfo">
+        -
+    </span>
+
+
+    <button
+        id="nextButton"
+        onclick="nextPage()"
+    >
+        →
+    </button>
+
+
+    <span id="progress">
+        0%
+    </span>
+
+
+</div>
+
+
+</div>
+
+
+<script type="module">
+
+/* =========================================================
+   PDF.JS
+========================================================= */
+
+import {
+    getDocument,
+    GlobalWorkerOptions
+} from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs";
+
+
+GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let book = null;
+
+let pdf = null;
+
+let currentPage = 1;
+
+let totalPages = 0;
+
+let pdfScale = 1.25;
+
+let rotation = 0;
+
+let epubBook = null;
+
+let epubRendition = null;
+
+
+/* =========================================================
+   GET SELECTED BOOK
+========================================================= */
+
+function getCurrentBook() {
+
+    const raw =
+        localStorage.getItem(
+            "currentBook"
+        );
+
+
+    console.log(
+        "currentBook:",
+        raw
+    );
+
+
+    if (!raw) {
+
+        return null;
+
+    }
+
+
+    try {
+
+        return JSON.parse(
+            raw
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Invalid currentBook:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* =========================================================
+   SHOW ERROR
+========================================================= */
+
+function showError(
+    text
+) {
+
+    document.getElementById(
+        "message"
+    ).style.display =
+        "flex";
+
+
+    document.getElementById(
+        "messageText"
+    ).textContent =
+        text;
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+async function initialize() {
+
+    book =
+        getCurrentBook();
+
+
+    // THIS fixes:
+    // "No book selected"
+
+    if (!book) {
+
+        showError(
+            "No book has been selected. " +
+            "Please return to your bookshelf " +
+            "and select a book."
+        );
+
+        return;
+
+    }
+
+
+    console.log(
+        "Selected book:",
+        book
+    );
+
+
+    document.getElementById(
+        "bookTitle"
+    ).textContent =
+        book.title || "Untitled";
+
+
+    document.getElementById(
+        "bookType"
+    ).textContent =
+        (
+            book.type || ""
+        ).toUpperCase();
+
+
+    if (
+        book.type === "pdf"
+    ) {
+
+        await openPDF();
+
+    }
+
+    else if (
+        book.type === "epub"
+    ) {
+
+        await openEPUB();
+
+    }
+
+    else {
+
+        showError(
+            "Unsupported book format."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PDF
+========================================================= */
+
+async function openPDF() {
+
+    document.getElementById(
+        "epubContainer"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "pdfContainer"
+    ).style.display =
+        "flex";
+
+
+    try {
+
+        const loadingTask =
+            getDocument({
+                url:
+                    book.link,
+
+                // Disable worker CORS issues
+                // because we're using same-origin proxy.
+                withCredentials:
+                    false
+            });
+
+
+        pdf =
+            await loadingTask.promise;
+
+
+        totalPages =
+            pdf.numPages;
+
+
+        const saved =
+            getReadingData();
+
+
+        if (
+            saved &&
+            saved.page
+        ) {
+
+            currentPage =
+                Math.min(
+                    totalPages,
+                    Math.max(
+                        1,
+                        Number(
+                            saved.page
+                        )
+                    )
+                );
+
+        }
+
+
+        await renderPage(
+            currentPage
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        showError(
+            "Unable to open PDF. " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER PDF PAGE
+========================================================= */
+
+async function renderPage(
+    pageNumber
+) {
+
+    if (!pdf) {
+        return;
+    }
+
+
+    const page =
+        await pdf.getPage(
+            pageNumber
+        );
+
+
+    const viewport =
+        page.getViewport({
+
+            scale:
+                pdfScale,
+
+            rotation:
+                rotation
+
+        });
+
+
+    const canvas =
+        document.getElementById(
+            "pdfCanvas"
+        );
+
+
+    const context =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    canvas.width =
+        viewport.width;
+
+
+    canvas.height =
+        viewport.height;
+
+
+    await page.render({
+
+        canvasContext:
+            context,
+
+        viewport:
+            viewport
+
+    }).promise;
+
+
+    document.getElementById(
+        "pageInfo"
+    ).textContent =
+        `${pageNumber} / ${totalPages}`;
+
+
+    const progress =
+        Math.round(
+            (
+                pageNumber /
+                totalPages
+            ) * 100
+        );
+
+
+    document.getElementById(
+        "progress"
+    ).textContent =
+        `${progress}%`;
+
+
+    saveReadingData({
+
+        page:
+            pageNumber,
+
+        progress:
+            progress
+
+    });
+
+
+    updateNavigation();
+
+}
+
+
+/* =========================================================
+   PDF NAVIGATION
+========================================================= */
+
+async function nextPage() {
+
+    if (
+        !pdf ||
+        currentPage >= totalPages
+    ) {
+
+        return;
+
+    }
+
+
+    currentPage++;
+
+
+    await renderPage(
+        currentPage
+    );
+
+}
+
+
+async function previousPage() {
+
+    if (
+        !pdf ||
+        currentPage <= 1
+    ) {
+
+        return;
+
+    }
+
+
+    currentPage--;
+
+
+    await renderPage(
+        currentPage
+    );
+
+}
+
+
+/* =========================================================
+   ZOOM
+========================================================= */
+
+async function zoomIn() {
+
+    if (
+        book &&
+        book.type === "pdf"
+    ) {
+
+        pdfScale += 0.15;
+
+        await renderPage(
+            currentPage
+        );
+
+    }
+
+}
+
+
+async function zoomOut() {
+
+    if (
+        book &&
+        book.type === "pdf"
+    ) {
+
+        pdfScale =
+            Math.max(
+                .5,
+                pdfScale - .15
+            );
+
+        await renderPage(
+            currentPage
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ROTATE
+========================================================= */
+
+async function rotate() {
+
+    if (
+        book &&
+        book.type === "pdf"
+    ) {
+
+        rotation =
+            (rotation + 90) % 360;
+
+
+        await renderPage(
+            currentPage
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EPUB
+========================================================= */
+
+async function openEPUB() {
+
+    document.getElementById(
+        "pdfContainer"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "epubContainer"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "optionsButton"
+    ).style.display =
+        "block";
+
+
+    try {
+
+        epubBook =
+            ePub(
+                book.link
+            );
+
+
+        epubRendition =
+            epubBook.renderTo(
+                "epubViewer",
+                {
+
+                    width:
+                        "100%",
+
+                    height:
+                        "100%",
+
+                    spread:
+                        "auto"
+
+                }
+            );
+
+
+        const saved =
+            getReadingData();
+
+
+        await epubRendition.display(
+            saved &&
+            saved.position
+            ?
+            saved.position
+            :
+            undefined
+        );
+
+
+        epubRendition.on(
+            "relocated",
+            function(location) {
+
+                const percentage =
+                    Math.round(
+                        (
+                            location.start
+                                .percentage ||
+                            0
+                        ) * 100
+                    );
+
+
+                document.getElementById(
+                    "progress"
+                ).textContent =
+                    `${percentage}%`;
+
+
+                document.getElementById(
+                    "pageInfo"
+                ).textContent =
+                    "EPUB";
+
+
+                saveReadingData({
+
+                    position:
+                        location.start
+                            .cfi,
+
+                    progress:
+                        percentage
+
+                });
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        showError(
+            "Unable to open EPUB. " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EPUB NAVIGATION
+========================================================= */
+
+async function nextEPUB() {
+
+    if (
+        epubRendition
+    ) {
+
+        await epubRendition.next();
+
+    }
+
+}
+
+
+async function previousEPUB() {
+
+    if (
+        epubRendition
+    ) {
+
+        await epubRendition.prev();
+
+    }
+
+}
+
+
+/* =========================================================
+   EPUB OPTIONS
+========================================================= */
+
+function toggleEpubOptions() {
+
+    const panel =
+        document.getElementById(
+            "epubOptions"
+        );
+
+
+    panel.style.display =
+        panel.style.display === "block"
+        ? "none"
+        : "block";
+
+}
+
+
+document.getElementById(
+    "fontSize"
+).addEventListener(
+    "input",
+    function() {
+
+        if (!epubRendition) {
+            return;
+        }
+
+
+        const value =
+            this.value;
+
+
+        epubRendition.themes.fontSize(
+            `${value}%`
+        );
+
+    }
+);
+
+
+document.getElementById(
+    "lineSpacing"
+).addEventListener(
+    "input",
+    function() {
+
+        if (!epubRendition) {
+            return;
+        }
+
+
+        const value =
+            Number(
+                this.value
+            ) / 100;
+
+
+        epubRendition.themes.default({
+
+            "body": {
+
+                "line-height":
+                    value
+
+            }
+
+        });
+
+    }
+);
+
+
+document.getElementById(
+    "margins"
+).addEventListener(
+    "input",
+    function() {
+
+        if (!epubRendition) {
+            return;
+        }
+
+
+        const value =
+            this.value;
+
+
+        epubRendition.themes.default({
+
+            "body": {
+
+                "padding":
+                    `0 ${value}px`
+
+            }
+
+        });
+
+    }
+);
+
+
+/* =========================================================
+   GENERIC NAVIGATION
+========================================================= */
+
+async function nextPageGeneric() {
+
+    if (
+        book &&
+        book.type === "pdf"
+    ) {
+
+        await nextPage();
+
+    } else {
+
+        await nextEPUB();
+
+    }
+
+}
+
+
+async function previousPageGeneric() {
+
+    if (
+        book &&
+        book.type === "pdf"
+    ) {
+
+        await previousPage();
+
+    } else {
+
+        await previousEPUB();
+
+    }
+
+}
+
+
+/* =========================================================
+   REPLACE BUTTON ACTIONS
+========================================================= */
+
+window.nextPage =
+    nextPageGeneric;
+
+
+window.previousPage =
+    previousPageGeneric;
+
+
+window.zoomIn =
+    zoomIn;
+
+
+window.zoomOut =
+    zoomOut;
+
+
+window.rotate =
+    rotate;
+
+
+/* =========================================================
+   READING DATA
+========================================================= */
+
+function getReadingData() {
+
+    if (!book) {
+        return null;
+    }
+
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(
+                "reading_" +
+                book.id
+            ) || "null"
+        );
+
+    } catch {
+
+        return null;
+
+    }
+
+}
+
+
+function saveReadingData(
+    data
+) {
+
+    if (!book) {
+        return;
+    }
+
+
+    const old =
+        getReadingData() || {};
+
+
+    const updated = {
+
+        ...old,
+
+        ...data,
+
+        updatedAt:
+            new Date().toISOString()
+
+    };
+
+
+    localStorage.setItem(
+
+        "reading_" +
+        book.id,
+
+        JSON.stringify(
+            updated
+        )
+
+    );
+
+
+    // Mark completed
+
+    if (
+        Number(
+            updated.progress || 0
+        ) >= 100
+    ) {
+
+        localStorage.setItem(
+            "completed_" + book.id,
+            "true"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   NAVIGATION BUTTON STATE
+========================================================= */
+
+function updateNavigation() {
+
+    if (!pdf) {
+        return;
+    }
+
+
+    document.getElementById(
+        "previousButton"
+    ).disabled =
+        currentPage <= 1;
+
+
+    document.getElementById(
+        "nextButton"
+    ).disabled =
+        currentPage >= totalPages;
+
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function toggleTheme() {
+
+    const body =
+        document.body;
+
+
+    if (
+        body.classList.contains(
+            "dark"
+        )
+    ) {
+
+        body.classList.remove(
+            "dark"
+        );
+
+        body.classList.add(
+            "sepia"
+        );
+
+        localStorage.setItem(
+            "readerTheme",
+            "sepia"
+        );
+
+    }
+
+    else if (
+        body.classList.contains(
+            "sepia"
+        )
+    ) {
+
+        body.classList.remove(
+            "sepia"
+        );
+
+        body.classList.add(
+            "light"
+        );
+
+        localStorage.setItem(
+            "readerTheme",
+            "light"
+        );
+
+    }
+
+    else {
+
+        body.classList.remove(
+            "light"
+        );
+
+        body.classList.add(
+            "dark"
+        );
+
+        localStorage.setItem(
+            "readerTheme",
+            "dark"
+        );
+
+    }
+
+}
+
+
+const savedTheme =
+    localStorage.getItem(
+        "readerTheme"
+    ) || "dark";
+
+
+document.body.classList.add(
+    savedTheme
+);
+
+
+/* =========================================================
+   FULLSCREEN
+========================================================= */
+
+async function toggleFullscreen() {
+
+    const element =
+        document.documentElement;
+
+
+    if (!document.fullscreenElement) {
+
+        await element.requestFullscreen();
+
+    }
+
+    else {
+
+        await document.exitFullscreen();
+
+    }
+
+}
+
+
+window.toggleFullscreen =
+    toggleFullscreen;
+
+
+/* =========================================================
+   BACK
+========================================================= */
+
+function goBack() {
+
+    window.location.href =
+        "/";
+
+}
+
+
+window.goBack =
+    goBack;
+
+
+/* =========================================================
+   START
+========================================================= */
+
+initialize();
+
+</script>
+
 
 </body>
+
 </html>
