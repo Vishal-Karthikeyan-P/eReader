@@ -1,567 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>eReader</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
 
-        body {
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Arial,
-                sans-serif;
-
-            background: #0f1115;
-            color: #f5f5f5;
-
-            min-height: 100vh;
-        }
-
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        header {
-            height: 72px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 0 6%;
-
-            background: rgba(15, 17, 21, 0.95);
-
-            border-bottom: 1px solid #252830;
-
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-
-        .logo {
-            display: flex;
-            align-items: center;
-
-            gap: 10px;
-
-            font-size: 21px;
-            font-weight: 700;
-
-            letter-spacing: -0.5px;
-        }
-
-
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #eeeeee;
-
-            color: #111111;
-
-            border-radius: 9px;
-
-            font-size: 19px;
-        }
-
-
-        .header-right {
-            color: #858b97;
-
-            font-size: 14px;
-        }
-
-
-        /* =========================
-           HERO
-        ========================= */
-
-        .hero {
-            max-width: 1200px;
-
-            margin: auto;
-
-            padding: 70px 6% 45px;
-        }
-
-
-        .hero-label {
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            padding: 7px 12px;
-
-            border-radius: 20px;
-
-            background: #191c23;
-
-            border: 1px solid #292d36;
-
-            color: #aeb3bd;
-
-            font-size: 13px;
-
-            margin-bottom: 22px;
-        }
-
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-
-            border-radius: 50%;
-
-            background: #69d391;
-        }
-
-
-        .hero h1 {
-            font-size: clamp(38px, 6vw, 64px);
-
-            line-height: 1.05;
-
-            letter-spacing: -2.5px;
-
-            max-width: 700px;
-
-            margin-bottom: 18px;
-        }
-
-
-        .hero h1 span {
-            color: #858b98;
-        }
-
-
-        .hero-description {
-            color: #9298a4;
-
-            font-size: 17px;
-
-            line-height: 1.7;
-
-            max-width: 580px;
-        }
-
-
-        /* =========================
-           BOOK SECTION
-        ========================= */
-
-        .books-section {
-            max-width: 1200px;
-
-            margin: auto;
-
-            padding: 10px 6% 80px;
-        }
-
-
-        .section-header {
-            display: flex;
-
-            align-items: center;
-            justify-content: space-between;
-
-            margin-bottom: 24px;
-        }
-
-
-        .section-title {
-            font-size: 22px;
-
-            font-weight: 650;
-
-            letter-spacing: -0.4px;
-        }
-
-
-        .book-count {
-            color: #737985;
-
-            font-size: 14px;
-        }
-
-
-        /* =========================
-           BOOK GRID
-        ========================= */
-
-        .books-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fill, minmax(210px, 1fr));
-
-            gap: 22px;
-        }
-
-
-        /* =========================
-           BOOK CARD
-        ========================= */
-
-        .book {
-            background: #16191f;
-
-            border: 1px solid #242832;
-
-            border-radius: 14px;
-
-            padding: 14px;
-
-            overflow: hidden;
-
-            transition:
-                transform 0.2s ease,
-                border-color 0.2s ease,
-                background 0.2s ease;
-        }
-
-
-        .book:hover {
-            transform: translateY(-5px);
-
-            border-color: #3b404b;
-
-            background: #1a1d24;
-        }
-
-
-        /* =========================
-           COVER
-        ========================= */
-
-        .book-cover {
-            height: 270px;
-
-            border-radius: 9px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #292e39,
-                    #171a20
-                );
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            margin-bottom: 15px;
-
-            overflow: hidden;
-
-            position: relative;
-        }
-
-
-        .book-cover-icon {
-            font-size: 52px;
-
-            opacity: 0.65;
-        }
-
-
-        .book-type {
-            position: absolute;
-
-            top: 10px;
-            right: 10px;
-
-            padding: 5px 8px;
-
-            border-radius: 6px;
-
-            background: rgba(0, 0, 0, 0.55);
-
-            color: #dddddd;
-
-            font-size: 11px;
-
-            text-transform: uppercase;
-        }
-
-
-        /* =========================
-           BOOK DETAILS
-        ========================= */
-
-        .book h3 {
-            font-size: 16px;
-
-            line-height: 1.4;
-
-            margin-bottom: 10px;
-
-            white-space: nowrap;
-
-            overflow: hidden;
-
-            text-overflow: ellipsis;
-        }
-
-
-        .book-meta {
-            color: #777d89;
-
-            font-size: 12px;
-
-            margin-bottom: 12px;
-        }
-
-
-        /* =========================
-           PROGRESS
-        ========================= */
-
-        .progress-container {
-            margin-bottom: 14px;
-        }
-
-
-        .progress-info {
-            display: flex;
-
-            justify-content: space-between;
-
-            margin-bottom: 6px;
-
-            font-size: 11px;
-
-            color: #777d89;
-        }
-
-
-        .progress-bar {
-            width: 100%;
-
-            height: 4px;
-
-            background: #292d35;
-
-            border-radius: 10px;
-
-            overflow: hidden;
-        }
-
-
-        .progress {
-            height: 100%;
-
-            width: 0%;
-
-            background: #d7d9dd;
-
-            border-radius: 10px;
-        }
-
-
-        /* =========================
-           READ BUTTON
-        ========================= */
-
-        .read-button {
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            width: 100%;
-
-            padding: 10px;
-
-            border-radius: 8px;
-
-            background: #eeeeee;
-
-            color: #111111;
-
-            text-decoration: none;
-
-            font-size: 13px;
-
-            font-weight: 600;
-
-            transition:
-                background 0.2s ease,
-                transform 0.2s ease;
-        }
-
-
-        .read-button:hover {
-            background: #ffffff;
-
-            transform: translateY(-1px);
-        }
-
-
-        .read-arrow {
-            margin-left: 7px;
-
-            font-size: 15px;
-        }
-
-
-        /* =========================
-           EMPTY STATE
-        ========================= */
-
-        .empty {
-            text-align: center;
-
-            padding: 80px 20px;
-
-            color: #737985;
-        }
-
-
-        .empty-icon {
-            font-size: 48px;
-
-            margin-bottom: 15px;
-
-            opacity: 0.5;
-        }
-
-
-        .empty h3 {
-            color: #c5c8ce;
-
-            margin-bottom: 8px;
-        }
-
-
-        /* =========================
-           FOOTER
-        ========================= */
-
-        footer {
-            border-top: 1px solid #20232a;
-
-            padding: 25px 6%;
-
-            text-align: center;
-
-            color: #5f646e;
-
-            font-size: 12px;
-        }
-
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 600px) {
-
-            header {
-                padding: 0 20px;
-            }
-
-
-            .header-right {
-                display: none;
-            }
-
-
-            .hero {
-                padding: 50px 20px 35px;
-            }
-
-
-            .hero h1 {
-                font-size: 42px;
-
-                letter-spacing: -1.8px;
-            }
-
-
-            .hero-description {
-                font-size: 15px;
-            }
-
-
-            .books-section {
-                padding: 10px 20px 60px;
-            }
-
-
-            .books-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-
-                gap: 12px;
-            }
-
-
-            .book {
-                padding: 9px;
-
-                border-radius: 11px;
-            }
-
-
-            .book-cover {
-                height: 210px;
-            }
-
-
-            .book h3 {
-                font-size: 14px;
-            }
-
-
-            .read-button {
-                font-size: 12px;
-
-                padding: 9px;
-            }
-
-        }
-
-
-        /* =========================
-           SMALL MOBILE
-        ========================= */
-
-        @media (max-width: 380px) {
-
-            .books-grid {
-                grid-template-columns: 1fr;
-            }
-
-
-            .book-cover {
-                height: 280px;
-            }
-
-        }
-
-    </style>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/bookshelf.css') }}"
+    >
 
 </head>
 
@@ -569,11 +25,7 @@
 <body>
 
 
-<!-- =========================
-     HEADER
-========================= -->
-
-<header>
+<header class="header">
 
     <div class="logo">
 
@@ -581,22 +33,35 @@
             📖
         </div>
 
-        <span>eReader</span>
+        <span>
+            eReader
+        </span>
 
     </div>
 
 
-    <div class="header-right">
-        Your personal bookshelf
+    <div class="header-actions">
+
+        <button
+            id="gridButton"
+            class="view-button active"
+        >
+            ▦
+        </button>
+
+
+        <button
+            id="listButton"
+            class="view-button"
+        >
+            ☰
+        </button>
+
     </div>
 
 </header>
 
 
-
-<!-- =========================
-     HERO
-========================= -->
 
 <section class="hero">
 
@@ -617,11 +82,10 @@
     </h1>
 
 
-    <p class="hero-description">
+    <p>
 
-        A simple, distraction-free place for your books.
-        Pick a book from your library and start reading
-        whenever you want.
+        Your personal reading space for
+        PDF and EPUB books.
 
     </p>
 
@@ -629,31 +93,60 @@
 
 
 
-<!-- =========================
-     BOOKS
-========================= -->
-
-<section class="books-section">
+<main class="library-container">
 
 
-    <div class="section-header">
-
-        <h2 class="section-title">
-            My Books
-        </h2>
+    <div class="library-header">
 
 
-        <span class="book-count">
+        <div>
 
-            {{ books|length }}
+            <h2>
+                My Books
+            </h2>
 
-            {% if books|length == 1 %}
-                book
-            {% else %}
-                books
-            {% endif %}
+            <span id="bookCount">
+                {{ books|length }} books
+            </span>
 
-        </span>
+        </div>
+
+
+        <div class="filters">
+
+            <button
+                class="filter active"
+                data-filter="all"
+            >
+                All
+            </button>
+
+
+            <button
+                class="filter"
+                data-filter="continue"
+            >
+                Continue Reading
+            </button>
+
+
+            <button
+                class="filter"
+                data-filter="completed"
+            >
+                Completed
+            </button>
+
+
+            <button
+                class="filter"
+                data-filter="history"
+            >
+                History
+            </button>
+
+        </div>
+
 
     </div>
 
@@ -662,58 +155,81 @@
     {% if books %}
 
 
-    <div class="books-grid">
+    <div
+        id="booksGrid"
+        class="books-grid"
+    >
 
 
         {% for book in books %}
 
 
-        <article class="book">
+        <article
+            class="book-card"
+            data-title="{{ book.title }}"
+            data-url="{{ book.link }}"
+            data-cover="{{ book.cover | default('') }}"
+        >
 
 
-            <!-- Book cover -->
+            <div class="cover-wrapper">
 
-            <div class="book-cover">
 
-                <div class="book-cover-icon">
-                    📚
+                {% if book.cover %}
+
+                <img
+                    src="{{ book.cover }}"
+                    alt="{{ book.title }}"
+                    class="book-cover"
+                    loading="lazy"
+                >
+
+                {% else %}
+
+                <div class="book-cover placeholder-cover">
+
+                    <span>
+                        📚
+                    </span>
+
                 </div>
 
+                {% endif %}
 
-                <div class="book-type">
+
+                <div class="book-format">
                     Book
                 </div>
 
-            </div>
 
+                <div
+                    class="completed-badge"
+                    hidden
+                >
+                    ✓
+                </div>
 
-            <!-- Book title -->
-
-            <h3 title="{{ book.title }}">
-
-                {{ book.title }}
-
-            </h3>
-
-
-            <div class="book-meta">
-
-                Ready to read
 
             </div>
 
 
-            <!-- Progress -->
+            <div class="book-information">
 
-            <div class="progress-container">
 
-                <div class="progress-info">
+                <h3
+                    title="{{ book.title }}"
+                >
+                    {{ book.title }}
+                </h3>
 
-                    <span>
-                        Progress
+
+                <div class="book-status">
+
+                    <span class="status-text">
+                        Not started
                     </span>
 
-                    <span>
+                    <span class="percentage">
                         0%
                     </span>
 
@@ -722,31 +238,28 @@
 
                 <div class="progress-bar">
 
-                    <div class="progress"
-                         style="width: 0%;">
-                    </div>
+                    <div class="progress-fill"></div>
 
                 </div>
 
+
+                <a
+                    class="read-button"
+                    href="/reader?title={{ book.title | urlencode }}&link={{ book.link | urlencode }}"
+                >
+
+                    <span class="read-label">
+                        Read Book
+                    </span>
+
+                    <span>
+                        →
+                    </span>
+
+                </a>
+
+
             </div>
-
-
-            <!-- ORIGINAL BOOK LINK -->
-
-            <a
-                class="read-button"
-                href="{{ book.link }}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-
-                Read Book
-
-                <span class="read-arrow">
-                    →
-                </span>
-
-            </a>
 
 
         </article>
@@ -761,22 +274,18 @@
     {% else %}
 
 
-    <!-- Empty library -->
-
     <div class="empty">
 
-        <div class="empty-icon">
+        <div>
             📚
         </div>
 
-
         <h3>
-            No books yet
+            Your library is empty
         </h3>
 
-
         <p>
-            Your library is currently empty.
+            Add books to your Google Drive library.
         </p>
 
     </div>
@@ -785,19 +294,21 @@
     {% endif %}
 
 
-</section>
+</main>
 
 
-
-<!-- =========================
-     FOOTER
-========================= -->
 
 <footer>
 
     eReader · Your personal reading space
 
 </footer>
+
+
+
+<script
+    src="{{ url_for('static', filename='js/bookshelf.js') }}"
+></script>
 
 
 </body>
