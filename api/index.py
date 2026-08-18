@@ -299,7 +299,11 @@ def reader():
         "reader.html"
     )
 
-
+@app.route("/setup")
+def setup():
+    return render_template(
+        "setup.html"
+    )
 # ============================================================
 # BOOK API
 # ============================================================
