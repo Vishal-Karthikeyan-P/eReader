@@ -264,42 +264,28 @@ def get_books_from_drive(folder_id):
     return books
 
 
-# ============================================================
-# HOME
-# ============================================================
-
+# Home / Landing Page
 @app.route("/")
 def home():
-
-    return render_template(
-        "index.html"
-    )
+    return render_template("index.html")
 
 
-# ============================================================
-# BOOKSHELF
-# ============================================================
+# Setup Page
+@app.route("/setup")
+def setup():
+    return render_template("setup.html")
 
+
+# Bookshelf Page
 @app.route("/bookshelf")
 def bookshelf():
-
-    return render_template(
-        "bookshelf.html"
-    )
+    return render_template("bookshelf.html")
 
 
-# ============================================================
-# READER
-# ============================================================
-
+# Reader Page
 @app.route("/reader")
 def reader():
-
-    return render_template(
-        "reader.html"
-    )
-
-
+    return render_template("reader.html")
 # ============================================================
 # BOOK API
 # ============================================================
