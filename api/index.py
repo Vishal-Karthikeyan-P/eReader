@@ -284,7 +284,7 @@ def home():
 def bookshelf():
 
     return render_template(
-        "bookshelf.html"
+        "index.html"
     )
 
 
