@@ -378,6 +378,10 @@
 
 <script>
 
+/* ==========================================================
+   ELEMENTS
+========================================================== */
+
 const form =
     document.getElementById(
         "setupForm"
@@ -408,27 +412,43 @@ const debug =
     );
 
 
-// ==========================================================
-// RESTORE SAVED FOLDER
-// ==========================================================
+/* ==========================================================
+   STORAGE KEY
+==========================================================
 
-const saved =
+   IMPORTANT:
+
+   This MUST match bookshelf.js:
+
+       driveFolderUrl
+
+========================================================== */
+
+const FOLDER_KEY =
+    "driveFolderUrl";
+
+
+/* ==========================================================
+   RESTORE SAVED FOLDER
+========================================================== */
+
+const savedFolder =
     localStorage.getItem(
-        "driveFolder"
+        FOLDER_KEY
     );
 
 
-if (saved) {
+if (savedFolder) {
 
     input.value =
-        saved;
+        savedFolder;
 
 }
 
 
-// ==========================================================
-// CONNECT
-// ==========================================================
+/* ==========================================================
+   CONNECT LIBRARY
+========================================================== */
 
 form.addEventListener(
     "submit",
@@ -437,11 +457,15 @@ form.addEventListener(
         event.preventDefault();
 
 
-        const folder =
+        const folderUrl =
             input.value.trim();
 
 
-        if (!folder) {
+        if (!folderUrl) {
+
+            showError(
+                "Please enter a Google Drive folder URL."
+            );
 
             return;
 
@@ -466,23 +490,27 @@ form.addEventListener(
 
         try {
 
+            /* ------------------------------------------------
+               CALL THE CORRECT BACKEND ENDPOINT
+            ------------------------------------------------ */
 
-            const url =
-                "/api/library?folder=" +
+            const apiUrl =
+                "/api/books?folder="
+                +
                 encodeURIComponent(
-                    folder
+                    folderUrl
                 );
 
 
             console.log(
                 "Requesting:",
-                url
+                apiUrl
             );
 
 
             const response =
                 await fetch(
-                    url,
+                    apiUrl,
                     {
                         cache:
                             "no-store"
@@ -490,57 +518,74 @@ form.addEventListener(
                 );
 
 
-            const data =
-                await response.json();
+            /* ------------------------------------------------
+               Read response as text first.
+
+               This makes server errors easier to diagnose.
+            ------------------------------------------------ */
+
+            const responseText =
+                await response.text();
 
 
             console.log(
                 "API response:",
-                data
+                responseText
             );
 
 
-            // ------------------------------------------------
-            // API ERROR
-            // ------------------------------------------------
+            let data;
+
+
+            try {
+
+                data =
+                    JSON.parse(
+                        responseText
+                    );
+
+            } catch (jsonError) {
+
+                console.error(
+                    "Invalid JSON:",
+                    responseText
+                );
+
+                throw new Error(
+                    "Server returned an invalid response."
+                );
+
+            }
+
+
+            /* ------------------------------------------------
+               API ERROR
+            ------------------------------------------------ */
 
             if (
-                !response.ok ||
+                !response.ok
+                ||
                 !data.success
             ) {
 
                 throw new Error(
-                    data.error ||
+                    data.error
+                    ||
                     "Google Drive request failed."
                 );
 
             }
 
 
-            // ------------------------------------------------
-            // NO FILES
-            // ------------------------------------------------
+            /* ------------------------------------------------
+               NO BOOKS
+            ------------------------------------------------ */
 
             if (
-                !data.filesFound
-            ) {
-
-                throw new Error(
-                    "Google Drive returned 0 files."
-                );
-
-            }
-
-
-            // ------------------------------------------------
-            // FILES BUT NO BOOKS
-            // ------------------------------------------------
-
-            if (
-                !data.books ||
+                !data.books
+                ||
                 data.books.length === 0
             ) {
-
 
                 message.className =
                     "message error";
@@ -552,7 +597,7 @@ form.addEventListener(
 
                 message.innerHTML =
                     "❌ Google Drive was accessed successfully, " +
-                    "but no PDF or EPUB files were found.";
+                    "but no PDF or EPUB books were found.";
 
 
                 debug.style.display =
@@ -580,15 +625,31 @@ form.addEventListener(
             }
 
 
-            // ------------------------------------------------
-            // SUCCESS
-            // ------------------------------------------------
+            /* ------------------------------------------------
+               SAVE FOLDER URL
+            ------------------------------------------------
+
+               This is the important part.
+
+               The bookshelf JS uses:
+
+                   driveFolderUrl
+            ------------------------------------------------ */
 
             localStorage.setItem(
-                "driveFolder",
-                folder
+                FOLDER_KEY,
+                folderUrl
             );
 
+
+            /* ------------------------------------------------
+               SAVE BOOK LIST
+
+               This is only a cache.
+
+               The bookshelf will check Drive again
+               whenever it loads.
+            ------------------------------------------------ */
 
             localStorage.setItem(
                 "books",
@@ -598,11 +659,19 @@ form.addEventListener(
             );
 
 
+            /* ------------------------------------------------
+               SAVE LAST CHECK TIME
+            ------------------------------------------------ */
+
             localStorage.setItem(
                 "libraryLastChecked",
                 new Date().toISOString()
             );
 
+
+            /* ------------------------------------------------
+               SUCCESS
+            ------------------------------------------------ */
 
             message.className =
                 "message success";
@@ -613,16 +682,22 @@ form.addEventListener(
 
 
             message.textContent =
-                "✓ " +
-                data.books.length +
+                "✓ "
+                +
+                data.books.length
+                +
                 " books found. Opening bookshelf...";
 
+
+            /* ------------------------------------------------
+               GO TO BOOKSHELF
+            ------------------------------------------------ */
 
             setTimeout(
                 function() {
 
                     window.location.href =
-                        "/";
+                        "/bookshelf";
 
                 },
                 700
@@ -631,25 +706,15 @@ form.addEventListener(
 
         } catch (error) {
 
-
             console.error(
+                "Setup error:",
                 error
             );
 
 
-            message.className =
-                "message error";
-
-
-            message.style.display =
-                "block";
-
-
-            message.innerHTML =
-                "❌ " +
-                escapeHtml(
-                    error.message
-                );
+            showError(
+                error.message
+            );
 
 
             button.disabled =
@@ -665,9 +730,31 @@ form.addEventListener(
 );
 
 
-// ==========================================================
-// ESCAPE
-// ==========================================================
+/* ==========================================================
+   ERROR DISPLAY
+========================================================== */
+
+function showError(
+    text
+) {
+
+    message.className =
+        "message error";
+
+
+    message.style.display =
+        "block";
+
+
+    message.textContent =
+        "❌ " + text;
+
+}
+
+
+/* ==========================================================
+   ESCAPE HTML
+========================================================== */
 
 function escapeHtml(
     value
@@ -678,8 +765,10 @@ function escapeHtml(
             "div"
         );
 
+
     div.textContent =
         value || "";
+
 
     return div.innerHTML;
 
