@@ -279,7 +279,7 @@ def setup():
 # Bookshelf Page
 @app.route("/bookshelf")
 def bookshelf():
-    return render_template("bookshelf.html")
+    return render_template("bookshelf")
 
 
 # Reader Page
