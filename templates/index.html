@@ -874,7 +874,7 @@ async function loadBooks(
 
     const folder =
         localStorage.getItem(
-            "driveFolder"
+            "driveFolderUrl"
         );
 
 
@@ -905,7 +905,7 @@ async function loadBooks(
 
         const response =
             await fetch(
-                "/api/library?folder=" +
+                "/api/books?folder=" +
                 encodeURIComponent(
                     folder
                 ) +
