@@ -730,7 +730,20 @@ main {
         id="search"
         type="search"
         placeholder="Search books..."
+        aria-label="Search books"
     >
+
+    <select
+        class="filter-select"
+        id="filter"
+        aria-label="Filter books"
+    >
+        <option value="all">All books</option>
+        <option value="continue">Continue reading</option>
+        <option value="completed">Completed</option>
+        <option value="history">Reading history</option>
+        <option value="not-started">Not started</option>
+    </select>
 
 
     <div class="view-toggle">
@@ -775,6 +788,8 @@ let currentView =
     localStorage.getItem(
         "bookshelfView"
     ) || "grid";
+
+let currentFilter = "all";
 
 
 // ============================================================
@@ -860,6 +875,29 @@ function getProgress(book) {
 
         return 0;
 
+    }
+}
+
+function getReadingState(book) {
+
+    try {
+        return JSON.parse(
+            localStorage.getItem("reading_" + book.id) || "{}"
+        );
+    } catch {
+        return {};
+    }
+}
+
+function getHistory() {
+
+    try {
+        const history = JSON.parse(
+            localStorage.getItem("readingHistory") || "[]"
+        );
+        return Array.isArray(history) ? history : [];
+    } catch {
+        return [];
     }
 }
 
@@ -1058,13 +1096,25 @@ function displayBooks(
         .toLowerCase();
 
 
-    const filtered =
-        books.filter(
-            book =>
-                book.title
-                    .toLowerCase()
-                    .includes(query)
-        );
+    const historyIds = new Set(
+        getHistory().map(item => String(item.id))
+    );
+
+    const filtered = books.filter(book => {
+        const progress = getProgress(book);
+        const matchesQuery = (book.title || book.name || "")
+            .toLowerCase()
+            .includes(query);
+
+        const matchesFilter =
+            currentFilter === "all" ||
+            (currentFilter === "continue" && progress > 0 && progress < 100) ||
+            (currentFilter === "completed" && progress >= 100) ||
+            (currentFilter === "history" && historyIds.has(String(book.id))) ||
+            (currentFilter === "not-started" && progress === 0);
+
+        return matchesQuery && matchesFilter;
+    });
 
 
     if (!filtered.length) {
@@ -1487,6 +1537,11 @@ document.getElementById(
 
     }
 );
+
+document.getElementById("filter").addEventListener("change", function() {
+    currentFilter = this.value;
+    displayBooks(allBooks);
+});
 
 
 // ============================================================

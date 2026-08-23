@@ -311,6 +311,16 @@
         }
 
 
+        #pdfCanvas.pdf-dark-mode {
+            filter: invert(1);
+        }
+
+
+        #pdfCanvas.pdf-sepia-mode {
+            filter: sepia(.7) saturate(.75);
+        }
+
+
         /* =====================================================
            LOADING
         ====================================================== */
@@ -669,6 +679,26 @@
         }
 
 
+        .page-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #d1d5db;
+            font-size: 13px;
+        }
+
+
+        .page-control input {
+            width: 48px;
+            padding: 5px;
+            border: 1px solid #4b5563;
+            border-radius: 6px;
+            background: #1f2937;
+            color: white;
+            text-align: center;
+        }
+
+
         /* =====================================================
            RESPONSIVE
         ====================================================== */
@@ -1018,9 +1048,17 @@
         </button>
 
 
-        <span id="pageInfo">
-            -
-        </span>
+        <label class="page-control">
+            Page
+            <input
+                id="pageInput"
+                type="number"
+                min="1"
+                value="1"
+                aria-label="Current page"
+            >
+            <span id="totalPages">-</span>
+        </label>
 
 
         <button
@@ -1081,6 +1119,23 @@ let epubRendition = null;
 function $(id) {
 
     return document.getElementById(id);
+
+}
+
+
+function applyPdfTheme() {
+
+    const canvas = $("pdfCanvas");
+
+    canvas.classList.toggle(
+        "pdf-dark-mode",
+        document.body.classList.contains("dark")
+    );
+
+    canvas.classList.toggle(
+        "pdf-sepia-mode",
+        document.body.classList.contains("sepia")
+    );
 
 }
 
@@ -1844,6 +1899,8 @@ async function renderPDFPage(pageNumber) {
         renderContext
     ).promise;
 
+    applyPdfTheme();
+
 
     hideLoading();
 
@@ -1852,8 +1909,11 @@ async function renderPDFPage(pageNumber) {
        Update page number.
     */
 
-    $("pageInfo").textContent =
-        `${pageNumber} / ${totalPages}`;
+    $("pageInput").value =
+        pageNumber;
+
+    $("totalPages").textContent =
+        `/ ${totalPages}`;
 
 
     /*
@@ -1885,8 +1945,20 @@ async function renderPDFPage(pageNumber) {
         page:
             pageNumber,
 
+        currentPage:
+            pageNumber,
+
+        totalPages:
+            totalPages,
+
         progress:
-            progress
+            progress,
+
+        completed:
+            progress >= 100,
+
+        lastRead:
+            new Date().toISOString()
 
     });
 
@@ -1907,58 +1979,6 @@ async function renderPDFPage(pageNumber) {
 /* =========================================================
    PDF NAVIGATION
 ========================================================= */
-
-async function nextPage() {
-
-    if (!pdf) {
-        return;
-    }
-
-
-    if (
-        currentPage >= totalPages
-    ) {
-
-        return;
-
-    }
-
-
-    currentPage++;
-
-
-    await renderPDFPage(
-        currentPage
-    );
-
-}
-
-
-async function previousPage() {
-
-    if (!pdf) {
-        return;
-    }
-
-
-    if (
-        currentPage <= 1
-    ) {
-
-        return;
-
-    }
-
-
-    currentPage--;
-
-
-    await renderPDFPage(
-        currentPage
-    );
-
-}
-
 
 /* =========================================================
    NAVIGATION STATE
@@ -2239,7 +2259,9 @@ async function openEPUB() {
                     `${percentage}%`;
 
 
-                $("pageInfo").textContent =
+                $("pageInput").value = "-";
+
+                $("totalPages").textContent =
                     "EPUB";
 
 
@@ -2248,8 +2270,17 @@ async function openEPUB() {
                     position:
                         location.start.cfi,
 
+                    location:
+                        location.start.cfi,
+
                     progress:
-                        percentage
+                        percentage,
+
+                    completed:
+                        percentage >= 100,
+
+                    lastRead:
+                        new Date().toISOString()
 
                 });
 
@@ -2860,6 +2891,8 @@ function toggleTheme() {
 
     }
 
+    applyPdfTheme();
+
 }
 
 
@@ -2882,6 +2915,32 @@ document.body.classList.remove(
 
 document.body.classList.add(
     savedTheme
+);
+
+applyPdfTheme();
+
+
+$("pageInput").addEventListener(
+    "change",
+    async function() {
+
+        if (!pdf) {
+            return;
+        }
+
+        const requestedPage = Number(this.value);
+
+        if (
+            requestedPage >= 1 &&
+            requestedPage <= totalPages
+        ) {
+            currentPage = requestedPage;
+            await renderPDFPage(currentPage);
+        } else {
+            this.value = currentPage;
+        }
+
+    }
 );
 
 

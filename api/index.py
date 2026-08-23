@@ -454,11 +454,19 @@ def file_proxy(file_id):
         # Download file from Google
         # ----------------------------------------------------
 
+        request_headers = {}
+        range_header = request.headers.get("Range")
+
+        if range_header:
+            request_headers["Range"] = range_header
+
         response = requests.get(
 
             google_url,
 
             params=params,
+
+            headers=request_headers,
 
             timeout=60,
 
@@ -521,23 +529,38 @@ def file_proxy(file_id):
         # Return file to browser
         # ----------------------------------------------------
 
+        response_headers = {
+
+            "Cache-Control":
+                "public, max-age=3600",
+
+            "Content-Disposition":
+                "inline"
+
+        }
+
+        for header_name in (
+            "Content-Length",
+            "Content-Range",
+            "Accept-Ranges"
+        ):
+
+            header_value = response.headers.get(
+                header_name
+            )
+
+            if header_value:
+                response_headers[header_name] = header_value
+
         return Response(
 
             response.content,
 
-            status=200,
+            status=response.status_code,
 
             content_type=content_type,
 
-            headers={
-
-                "Cache-Control":
-                    "public, max-age=3600",
-
-                "Content-Disposition":
-                    "inline"
-
-            }
+            headers=response_headers
 
         )
 
