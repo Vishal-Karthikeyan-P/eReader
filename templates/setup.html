@@ -303,21 +303,37 @@
 
     <p class="description">
 
-        Enter the link to your public Google Drive
-        folder containing your PDF and EPUB books.
-
-        Your folder link is stored locally in your
-        browser so you won't need to enter it again.
+        Create a private keyword to sync your library
+        and reading progress across devices. Keep it
+        private: anyone who knows it can access your account.
 
     </p>
 
 
     <form id="setupForm">
 
+        <label for="keyword">
+
+            Private Keyword
+
+        </label>
+
+
+        <input
+            id="keyword"
+            type="password"
+            minlength="12"
+            maxlength="64"
+            pattern="[A-Za-z0-9_-]{12,64}"
+            placeholder="12-64 letters, numbers, _ or -"
+            autocomplete="off"
+            required
+        >
+
 
         <label for="folderUrl">
 
-            Google Drive Folder
+            Google Drive Folder (leave blank to restore)
 
         </label>
 
@@ -327,7 +343,6 @@
             type="text"
             placeholder="https://drive.google.com/drive/folders/..."
             autocomplete="off"
-            required
         >
 
 
@@ -394,6 +409,12 @@ const input =
     );
 
 
+const keywordInput =
+    document.getElementById(
+        "keyword"
+    );
+
+
 const button =
     document.getElementById(
         "connectButton"
@@ -427,6 +448,9 @@ const debug =
 const FOLDER_KEY =
     "driveFolderUrl";
 
+const KEYWORD_KEY =
+    "readerAccountKeyword";
+
 
 /* ==========================================================
    RESTORE SAVED FOLDER
@@ -437,8 +461,18 @@ const savedFolder =
         FOLDER_KEY
     );
 
+const savedKeyword =
+    localStorage.getItem(
+        KEYWORD_KEY
+    );
 
-if (savedFolder) {
+
+if (savedKeyword) {
+
+    keywordInput.value =
+        savedKeyword;
+
+} else if (savedFolder) {
 
     input.value =
         savedFolder;
@@ -460,11 +494,14 @@ form.addEventListener(
         const folderUrl =
             input.value.trim();
 
+        const keyword =
+            keywordInput.value.trim().toLowerCase();
 
-        if (!folderUrl) {
+
+        if (!keyword) {
 
             showError(
-                "Please enter a Google Drive folder URL."
+                "Please enter your private keyword."
             );
 
             return;
@@ -489,6 +526,50 @@ form.addEventListener(
 
 
         try {
+
+            if (!folderUrl) {
+
+                button.textContent =
+                    "Restoring library...";
+
+                const response = await fetch(
+                    "/api/account/session",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ keyword })
+                    }
+                );
+
+                const account = await response.json();
+                if (!response.ok || !account.success) {
+                    throw new Error(
+                        account.error || "Unable to restore account."
+                    );
+                }
+
+                localStorage.setItem(KEYWORD_KEY, keyword);
+                localStorage.setItem(FOLDER_KEY, account.folderUrl);
+                localStorage.setItem(
+                    "readingHistory",
+                    JSON.stringify(account.history || [])
+                );
+
+                Object.entries(account.readingData || {}).forEach(
+                    ([bookId, readingData]) => {
+                        localStorage.setItem(
+                            "reading_" + bookId,
+                            JSON.stringify(readingData)
+                        );
+                    }
+                );
+
+                window.location.href = "/bookshelf";
+                return;
+
+            }
 
             /* ------------------------------------------------
                CALL THE CORRECT BACKEND ENDPOINT
@@ -625,6 +706,54 @@ form.addEventListener(
             }
 
 
+            const readingData = {};
+            for (let index = 0; index < localStorage.length; index++) {
+                const key = localStorage.key(index);
+                if (key && key.startsWith("reading_")) {
+                    try {
+                        readingData[key.slice(8)] = JSON.parse(
+                            localStorage.getItem(key)
+                        );
+                    } catch {
+                        // Ignore malformed browser cache entries.
+                    }
+                }
+            }
+
+            let history = [];
+            try {
+                history = JSON.parse(
+                    localStorage.getItem("readingHistory") || "[]"
+                );
+                if (!Array.isArray(history)) history = [];
+            } catch {
+                history = [];
+            }
+
+            const accountResponse = await fetch(
+                "/api/account",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        keyword,
+                        folderUrl,
+                        readingData,
+                        history
+                    })
+                }
+            );
+
+            const accountResult = await accountResponse.json();
+            if (!accountResponse.ok || !accountResult.success) {
+                throw new Error(
+                    accountResult.error || "Unable to create account."
+                );
+            }
+
+
             /* ------------------------------------------------
                SAVE FOLDER URL
             ------------------------------------------------
@@ -639,6 +768,11 @@ form.addEventListener(
             localStorage.setItem(
                 FOLDER_KEY,
                 folderUrl
+            );
+
+            localStorage.setItem(
+                KEYWORD_KEY,
+                keyword
             );
 
 

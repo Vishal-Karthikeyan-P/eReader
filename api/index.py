@@ -1,5 +1,7 @@
 import os
 import re
+import hashlib
+import json
 import requests
 
 from flask import (
@@ -42,6 +44,78 @@ DRIVE_API_KEY = os.environ.get(
 DRIVE_API_URL = (
     "https://www.googleapis.com/drive/v3/files"
 )
+
+UPSTASH_REDIS_REST_URL = os.environ.get(
+    "UPSTASH_REDIS_REST_URL",
+    ""
+).rstrip("/")
+
+UPSTASH_REDIS_REST_TOKEN = os.environ.get(
+    "UPSTASH_REDIS_REST_TOKEN",
+    ""
+)
+
+
+def normalize_keyword(keyword):
+    if not isinstance(keyword, str):
+        return None
+
+    keyword = keyword.strip().lower()
+    if not re.fullmatch(r"[a-z0-9_-]{12,64}", keyword):
+        return None
+
+    return keyword
+
+
+def keyword_digest(keyword):
+    return hashlib.sha256(keyword.encode("utf-8")).hexdigest()
+
+
+def redis_command(*command):
+    if not UPSTASH_REDIS_REST_URL or not UPSTASH_REDIS_REST_TOKEN:
+        raise RuntimeError("Upstash Redis is not configured.")
+
+    response = requests.post(
+        UPSTASH_REDIS_REST_URL,
+        headers={
+            "Authorization": f"Bearer {UPSTASH_REDIS_REST_TOKEN}"
+        },
+        json=list(command),
+        timeout=10
+    )
+    response.raise_for_status()
+    result = response.json()
+    if result.get("error"):
+        raise RuntimeError(result["error"])
+
+    return result.get("result")
+
+
+def account_redis_key(keyword):
+    return "ereader:account:" + keyword_digest(keyword)
+
+
+def account_keyword_from_json():
+    payload = request.get_json(silent=True) or {}
+    if not isinstance(payload, dict):
+        payload = {}
+
+    keyword = normalize_keyword(payload.get("keyword"))
+    if not keyword:
+        return None, (jsonify({
+            "success": False,
+            "error": "Choose a private keyword using 12-64 letters, numbers, hyphens, or underscores."
+        }), 400)
+
+    return keyword, None
+
+
+def storage_unavailable(error):
+    print("Account storage error:", str(error))
+    return jsonify({
+        "success": False,
+        "error": "Account storage is unavailable. Configure Upstash Redis in Vercel and try again."
+    }), 503
 
 
 # ============================================================
@@ -218,6 +292,8 @@ def get_books_from_drive(folder_id):
         proxy_url = (
             "/api/file/"
             + file_id
+            + "?type="
+            + file_type
         )
 
 
@@ -304,6 +380,172 @@ def setup():
     return render_template(
         "setup.html"
     )
+
+
+@app.route("/api/account", methods=["POST"])
+def create_account():
+    keyword, error = account_keyword_from_json()
+    if error:
+        return error
+
+    payload = request.get_json(silent=True) or {}
+    folder_url = payload.get("folderUrl", "")
+    if not isinstance(folder_url, str):
+        folder_url = ""
+    folder_url = folder_url.strip()
+    if not extract_folder_id(folder_url):
+        return jsonify({
+            "success": False,
+            "error": "A valid Google Drive folder URL is required."
+        }), 400
+
+    reading_data = payload.get("readingData", {})
+    history = payload.get("history", [])
+    if (
+        not isinstance(reading_data, dict)
+        or not isinstance(history, list)
+        or any(not isinstance(item, dict) for item in history)
+    ):
+        return jsonify({
+            "success": False,
+            "error": "Initial reading data is invalid."
+        }), 400
+
+    account_key = account_redis_key(keyword)
+    try:
+        created = redis_command(
+            "HSETNX",
+            account_key,
+            "folderUrl",
+            folder_url
+        )
+        if not created:
+            return jsonify({
+                "success": False,
+                "error": "That keyword is already in use. Restore its library or choose another keyword."
+            }), 409
+
+        initial_fields = []
+        for book_id, saved in reading_data.items():
+            if isinstance(book_id, str) and re.fullmatch(
+                r"[a-zA-Z0-9_-]{1,200}", book_id
+            ) and isinstance(saved, dict):
+                initial_fields.extend((
+                    "reading:" + book_id,
+                    json.dumps(saved)
+                ))
+
+        for item in history[:50]:
+            book_id = item.get("id")
+            if isinstance(book_id, str) and re.fullmatch(
+                r"[a-zA-Z0-9_-]{1,200}", book_id
+            ):
+                initial_fields.extend((
+                    "history:" + book_id,
+                    json.dumps(item)
+                ))
+
+        if initial_fields:
+            redis_command("HSET", account_key, *initial_fields)
+    except Exception as error:
+        return storage_unavailable(error)
+
+    return jsonify({"success": True}), 201
+
+
+@app.route("/api/account/session", methods=["POST"])
+def restore_account():
+    keyword, error = account_keyword_from_json()
+    if error:
+        return error
+
+    try:
+        values = redis_command(
+            "HGETALL",
+            account_redis_key(keyword)
+        )
+    except Exception as error:
+        return storage_unavailable(error)
+
+    if isinstance(values, dict):
+        account = values
+    else:
+        account = dict(zip(values[::2], values[1::2])) if values else {}
+    folder_url = account.get("folderUrl")
+    if not folder_url:
+        return jsonify({
+            "success": False,
+            "error": "No library was found for that keyword."
+        }), 404
+
+    reading_data = {}
+    history = []
+    for field, value in account.items():
+        try:
+            parsed = json.loads(value)
+        except (TypeError, json.JSONDecodeError):
+            continue
+
+        if field.startswith("reading:"):
+            reading_data[field[8:]] = parsed
+        elif field.startswith("history:") and isinstance(parsed, dict):
+            history.append(parsed)
+
+    history.sort(
+        key=lambda item: item.get("lastRead", item.get("openedAt", "")),
+        reverse=True
+    )
+    return jsonify({
+        "success": True,
+        "folderUrl": folder_url,
+        "readingData": reading_data,
+        "history": history[:50]
+    })
+
+
+@app.route("/api/account/progress", methods=["PUT"])
+def save_account_progress():
+    keyword, error = account_keyword_from_json()
+    if error:
+        return error
+
+    payload = request.get_json(silent=True) or {}
+    book_id = str(payload.get("bookId", ""))
+    reading_data = payload.get("readingData")
+    history_entry = payload.get("historyEntry")
+    if (
+        not re.fullmatch(r"[a-zA-Z0-9_-]{1,200}", book_id)
+        or not isinstance(reading_data, dict)
+        or not isinstance(history_entry, dict)
+    ):
+        return jsonify({
+            "success": False,
+            "error": "Reading progress is invalid."
+        }), 400
+
+    account_key = account_redis_key(keyword)
+    try:
+        if not redis_command("HEXISTS", account_key, "folderUrl"):
+            return jsonify({
+                "success": False,
+                "error": "No library was found for that keyword."
+            }), 404
+
+        history_entry["id"] = book_id
+        redis_command(
+            "HSET",
+            account_key,
+            "reading:" + book_id,
+            json.dumps(reading_data),
+            "history:" + book_id,
+            json.dumps(history_entry)
+        )
+    except Exception as error:
+        return storage_unavailable(error)
+
+    return jsonify({"success": True})
+
+
 # ============================================================
 # BOOK API
 # ============================================================
@@ -475,7 +717,7 @@ def file_proxy(file_id):
         )
 
 
-        if response.status_code != 200:
+        if response.status_code not in (200, 206):
 
             print(
                 "Google Drive file error:",
@@ -523,6 +765,9 @@ def file_proxy(file_id):
             content_type = (
                 "application/pdf"
             )
+
+        elif request.args.get("type") == "epub":
+            content_type = "application/epub+zip"
 
 
         # ----------------------------------------------------

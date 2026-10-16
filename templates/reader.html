@@ -1111,6 +1111,10 @@ let epubBook = null;
 
 let epubRendition = null;
 
+let progressSyncTimer = null;
+
+let pendingProgressSync = null;
+
 
 /* =========================================================
    ELEMENT HELPERS
@@ -1458,7 +1462,72 @@ function saveReadingData(data) {
 
     }
 
+
+    queueRemoteProgress(
+        updated,
+        historyBook
+    );
+
 }
+
+
+function queueRemoteProgress(readingData, historyEntry) {
+
+    const keyword =
+        localStorage.getItem("readerAccountKeyword");
+
+    if (!keyword) {
+        return;
+    }
+
+    pendingProgressSync = {
+        keyword,
+        bookId: String(book.id),
+        readingData,
+        historyEntry
+    };
+
+    clearTimeout(progressSyncTimer);
+    progressSyncTimer = setTimeout(
+        flushRemoteProgress,
+        400
+    );
+
+}
+
+
+function flushRemoteProgress() {
+
+    if (!pendingProgressSync) {
+        return;
+    }
+
+    const payload = pendingProgressSync;
+    pendingProgressSync = null;
+    clearTimeout(progressSyncTimer);
+
+    fetch("/api/account/progress", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload),
+        keepalive: true
+    }).then(response => {
+        if (!response.ok) {
+            console.error("Unable to sync reading progress.");
+        }
+    }).catch(error => {
+        console.error("Unable to sync reading progress:", error);
+    });
+
+}
+
+
+window.addEventListener(
+    "pagehide",
+    flushRemoteProgress
+);
 
 
 /* =========================================================
@@ -2130,7 +2199,11 @@ async function openEPUB() {
     const epubUrl =
         book.download_url ||
         book.downloadUrl ||
-        book.link;
+        (
+            book.id
+            ? "/api/file/" + encodeURIComponent(book.id) + "?type=epub"
+            : book.link
+        );
 
 
     if (!epubUrl) {
