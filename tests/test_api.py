@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 from api.index import app
@@ -89,6 +90,12 @@ class AccountApiTests(unittest.TestCase):
             "keyword": "too-short"
         })
         self.assertEqual(response.status_code, 400)
+
+    def test_bookshelf_syncs_remote_progress_on_load(self):
+        template = Path(__file__).resolve().parents[1] / "templates" / "index.html"
+        content = template.read_text()
+        self.assertIn("syncAccountProgress", content)
+        self.assertIn("await syncAccountProgress()", content)
 
 
 class DriveProxyTests(unittest.TestCase):

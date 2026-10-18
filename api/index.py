@@ -797,9 +797,27 @@ def file_proxy(file_id):
             if header_value:
                 response_headers[header_name] = header_value
 
+        def generate_file_stream():
+            iter_content = getattr(response, "iter_content", None)
+            if callable(iter_content):
+                try:
+                    chunks = iter_content(chunk_size=65536)
+                except TypeError:
+                    chunks = None
+
+                if chunks is not None and hasattr(chunks, "__iter__"):
+                    for chunk in chunks:
+                        if chunk:
+                            yield chunk
+                    return
+
+            content = getattr(response, "content", None)
+            if content:
+                yield content
+
         return Response(
 
-            response.content,
+            generate_file_stream(),
 
             status=response.status_code,
 

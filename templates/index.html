@@ -901,6 +901,53 @@ function getHistory() {
     }
 }
 
+async function syncAccountProgress() {
+    const keyword = localStorage.getItem("readerAccountKeyword");
+    if (!keyword) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            "/api/account/session",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ keyword })
+            }
+        );
+
+        if (!response.ok) {
+            return;
+        }
+
+        const account = await response.json();
+        if (!account || !account.success) {
+            return;
+        }
+
+        if (account.folderUrl) {
+            localStorage.setItem("driveFolderUrl", account.folderUrl);
+        }
+
+        const readingData = account.readingData || {};
+        Object.entries(readingData).forEach(([bookId, readingState]) => {
+            if (readingState && typeof readingState === "object") {
+                localStorage.setItem("reading_" + bookId, JSON.stringify(readingState));
+            }
+        });
+
+        const history = Array.isArray(account.history) ? account.history : [];
+        if (history.length) {
+            localStorage.setItem("readingHistory", JSON.stringify(history));
+        }
+    } catch (error) {
+        console.warn("Unable to sync account progress:", error);
+    }
+}
+
 
 // ============================================================
 // LOAD LIBRARY
@@ -940,6 +987,8 @@ async function loadBooks(
 
 
     try {
+
+        await syncAccountProgress();
 
         const response =
             await fetch(

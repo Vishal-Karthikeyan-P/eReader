@@ -2196,7 +2196,7 @@ async function openEPUB() {
        Prefer download_url over Drive viewer link.
     */
 
-    const epubUrl =
+    const rawEpubUrl =
         book.download_url ||
         book.downloadUrl ||
         (
@@ -2204,6 +2204,13 @@ async function openEPUB() {
             ? "/api/file/" + encodeURIComponent(book.id) + "?type=epub"
             : book.link
         );
+
+    const epubUrl =
+        typeof rawEpubUrl === "string" &&
+        !rawEpubUrl.startsWith("http://") &&
+        !rawEpubUrl.startsWith("https://")
+            ? new URL(rawEpubUrl, window.location.origin).toString()
+            : rawEpubUrl;
 
 
     if (!epubUrl) {
