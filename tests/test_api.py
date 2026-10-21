@@ -126,8 +126,62 @@ class DriveProxyTests(unittest.TestCase):
         self.assertEqual(response.data, b"EPUB")
         self.assertEqual(
             get.call_args.kwargs["headers"],
-            {"Range": "bytes=0-3"}
+            {"Accept-Encoding": "identity", "Range": "bytes=0-3"}
         )
+
+
+class CoverApiTests(unittest.TestCase):
+    def setUp(self):
+        import api.index as index
+        index.COVER_CACHE.clear()
+        self.index = index
+        self.client = app.test_client()
+
+    def fake_get(self, url, params=None, **kwargs):
+        response = Mock()
+        response.status_code = 200
+        if "openlibrary.org/search.json" in url:
+            title = params["title"]
+            response.json.return_value = {
+                "docs": [{"title": "1984", "cover_i": 7}] if title == "1984" else []
+            }
+        elif url.startswith("https://covers.openlibrary.org/"):
+            response.headers = {"Content-Type": "image/jpeg"}
+            response.content = b"x" * 5000
+        else:  # Google Books: nothing found
+            response.json.return_value = {}
+        return response
+
+    def test_clean_title_strips_file_name_noise(self):
+        self.assertEqual(
+            self.index.clean_title("Needful_Things - Stephen King (z-lib.org).epub"),
+            "Needful Things - Stephen King"
+        )
+        self.assertEqual(
+            self.index.split_title_author("Dune - Frank Herbert"),
+            ("Dune", "Frank Herbert")
+        )
+
+    def test_returns_cover_image_when_found(self):
+        with patch("api.index.requests.get", side_effect=self.fake_get):
+            response = self.client.get("/api/cover?title=1984.pdf")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content_type, "image/jpeg")
+        self.assertEqual(len(response.data), 5000)
+
+    def test_404_when_no_cover_so_browser_uses_first_page(self):
+        with patch("api.index.requests.get", side_effect=self.fake_get):
+            response = self.client.get("/api/cover?title=Unknown%20Handbook.pdf")
+        self.assertEqual(response.status_code, 404)
+
+    def test_requires_title(self):
+        self.assertEqual(self.client.get("/api/cover").status_code, 400)
+
+    def test_outage_is_not_reported_as_missing(self):
+        import requests as real_requests
+        with patch("api.index.requests.get", side_effect=real_requests.ConnectionError("down")):
+            response = self.client.get("/api/cover?title=Dune.pdf")
+        self.assertEqual(response.status_code, 502)
 
 
 if __name__ == "__main__":

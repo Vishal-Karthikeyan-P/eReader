@@ -23,6 +23,23 @@ Flask app. Without the two Upstash variables, account creation and restore
 return an account-storage configuration error; the existing local browser cache
 continues to work.
 
+## Covers
+
+The bookshelf asks `/api/cover?title=...`, which looks the book up on Open
+Library, then Google Books, and returns the image. If neither has it (404),
+the browser renders the book's own first page instead: page 1 of a PDF, or the
+cover image inside an EPUB. Results are cached in the browser (IndexedDB), so
+each book is looked up once. No API keys are needed.
+
+## Reader
+
+- Layouts: two pages, single page (fits the screen height) and fit to width
+  (default). The choice applies to PDF and EPUB and is remembered.
+- EPUBs are downloaded in 3 MB Range chunks and opened from memory, which
+  avoids serverless response size limits.
+- Appearance: light / dark / auto plus seven colour themes, stored in
+  `localStorage` (`readerMode`, `readerPalette`).
+
 ## Checks
 
 Run the focused API tests with:

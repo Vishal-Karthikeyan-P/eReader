@@ -2,904 +2,350 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f4fb">
+<title>Library · Book Reader</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Book Reader</title>
+<link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+<link rel="icon" href="{{ url_for('static', filename='icons/icon.svg') }}" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 
 <style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-
-    margin: 0;
-
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f6f7fb;
-
-    color: #111827;
-}
-
-header {
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 10;
-
-    background:
-        rgba(255,255,255,.94);
-
-    backdrop-filter:
-        blur(12px);
-
-    border-bottom:
-        1px solid #e5e7eb;
-}
-
-.header-inner {
-
-    max-width: 1250px;
-
-    margin: auto;
-
-    padding:
-        16px 24px;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 20px;
-}
-
-.brand {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-}
-
-.brand-icon {
-
-    width: 42px;
-
-    height: 42px;
-
-    border-radius: 12px;
-
-    background: #111827;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 20px;
-}
-
-.brand h1 {
-
-    margin: 0;
-
-    font-size: 18px;
-}
-
-.brand span {
-
-    color: #8a91a1;
-
-    font-size: 12px;
-}
-
-.actions {
-
-    display: flex;
-
-    gap: 8px;
-}
-
-.action-button {
-
-    border:
-        1px solid #e1e4eb;
-
-    background: white;
-
-    padding:
-        10px 14px;
-
-    border-radius: 10px;
-
-    cursor: pointer;
-
-    font-weight: 600;
-}
-
-.action-button:hover {
-
-    background: #f1f3f7;
-}
-
-main {
-
-    max-width: 1250px;
-
-    margin: auto;
-
-    padding:
-        35px 24px 60px;
-}
-
-.hero {
-
-    display: flex;
-
-    align-items: flex-end;
-
-    justify-content: space-between;
-
-    gap: 20px;
-
-    margin-bottom: 28px;
-}
-
-.hero h2 {
-
-    margin: 0;
-
-    font-size:
-        clamp(30px,4vw,42px);
-
-    letter-spacing: -1px;
-}
-
-.hero p {
-
-    color: #737b8c;
-
-    margin:
-        7px 0 0;
-}
-
-.stats {
-
-    display: flex;
-
-    gap: 10px;
-}
-
-.stat {
-
-    background: white;
-
-    border:
-        1px solid #e5e7eb;
-
-    padding:
-        12px 16px;
-
-    border-radius: 13px;
-
-    min-width: 100px;
-}
-
-.stat strong {
-
-    display: block;
-
-    font-size: 20px;
-}
-
-.stat span {
-
-    color: #7d8595;
-
-    font-size: 12px;
-}
-
-.toolbar {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 24px;
-
-    gap: 15px;
-}
-
-.search {
-
-    width:
-        min(320px,60vw);
-
-    padding:
-        12px 14px;
-
-    border:
-        1px solid #dfe3ea;
-
-    border-radius: 10px;
-
-    background: white;
-
-    outline: none;
-}
-
-.search:focus {
-
-    border-color: #6366f1;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(99,102,241,.1);
-}
-
-.view-toggle {
-
-    display: flex;
-
-    border:
-        1px solid #dfe3ea;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-
-    background: white;
-}
-
-.view-toggle button {
-
-    border: none;
-
-    background: white;
-
-    padding:
-        10px 14px;
-
-    cursor: pointer;
-}
-
-.view-toggle button.active {
-
-    background: #111827;
-
-    color: white;
-}
-
-#bookshelf {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fill,
-            minmax(190px,1fr)
-        );
-
-    gap: 22px;
-}
-
-.book-card {
-
-    background: white;
-
-    border:
-        1px solid #e5e7eb;
-
-    border-radius: 16px;
-
-    overflow: hidden;
-
-    transition:
-        .2s;
-}
-
-.book-card:hover {
-
-    transform:
-        translateY(-3px);
-
-    box-shadow:
-        0 14px 35px
-        rgba(0,0,0,.08);
-}
-
-.cover {
-
-    height: 250px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #e8eaf1,
-            #cfd4df
-        );
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    overflow: hidden;
-}
-
-.cover img {
-
-    width: 100%;
-
-    height: 100%;
-
-    object-fit: cover;
-}
-
-.placeholder {
-
-    font-size: 55px;
-}
-
-.book-info {
-
-    padding: 15px;
-}
-
-.book-title {
-
-    margin: 0;
-
-    min-height: 44px;
-
-    font-size: 16px;
-
-    line-height: 1.35;
-}
-
-.book-type {
-
-    display: inline-block;
-
-    margin-top: 8px;
-
-    font-size: 10px;
-
-    font-weight: 700;
-
-    background: #eef0ff;
-
-    color: #575bd6;
-
-    padding:
-        4px 7px;
-
-    border-radius: 6px;
-}
-
-.progress-container {
-
-    margin-top: 14px;
-}
-
-.progress-label {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    color: #818899;
-
-    font-size: 11px;
-
-    margin-bottom: 5px;
-}
-
-.progress {
-
-    height: 5px;
-
-    background: #e6e8ed;
-
-    border-radius: 5px;
-
-    overflow: hidden;
-}
-
-.progress-bar {
-
-    height: 100%;
-
-    background: #6366f1;
-}
-
-.read-button {
-
-    width: 100%;
-
-    border: none;
-
-    background: #111827;
-
-    color: white;
-
-    padding: 10px;
-
-    border-radius: 9px;
-
-    margin-top: 14px;
-
-    cursor: pointer;
-
-    font-weight: 600;
-}
-
-.read-button:hover {
-
-    background: #292f3d;
-}
-
-.loading,
-.empty,
-.error {
-
-    grid-column: 1/-1;
-
-    background: white;
-
-    border-radius: 16px;
-
-    padding: 60px 25px;
-
-    text-align: center;
-}
-
-.loading {
-
-    color: #7c8494;
-}
-
-.error {
-
-    background: #fff1f2;
-
-    color: #be123c;
-
-    text-align: left;
-}
-
-.empty-icon {
-
-    font-size: 45px;
-}
-
-#bookshelf.list-view {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 10px;
-}
-
-.list-view .book-card {
-
-    display: flex;
-
-    align-items: center;
-
-    padding: 10px;
-}
-
-.list-view .cover {
-
-    width: 70px;
-
-    height: 90px;
-
-    flex-shrink: 0;
-
-    border-radius: 8px;
-}
-
-.list-view .book-info {
-
-    flex: 1;
-
-    padding:
-        0 15px;
-}
-
-.list-view .book-title {
-
-    min-height: 0;
-}
-
-.list-view .read-button {
-
-    width: 120px;
-
-    margin:
-        0 10px 0 0;
-}
-
-@media(max-width:700px) {
-
-    .header-inner {
-
-        padding:
-            14px 16px;
+    .appbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        padding-top: var(--safe-top);
+        background: color-mix(in srgb, var(--bg) 82%, transparent);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--line);
     }
-
-    main {
-
-        padding:
-            25px 16px;
-    }
-
-    .hero {
-
-        flex-direction: column;
-
-        align-items: flex-start;
-    }
-
-    .stats {
-
-        width: 100%;
-    }
-
-    .stat {
-
-        flex: 1;
-    }
-
-    .toolbar {
-
-        flex-direction: column;
-
-        align-items: stretch;
-    }
-
-    .search {
-
-        width: 100%;
-    }
-
-    #bookshelf {
-
-        grid-template-columns:
-            repeat(2,1fr);
-
+    .appbar-inner {
+        max-width: 1240px;
+        margin: 0 auto;
+        height: 60px;
+        padding: 0 max(16px, var(--safe-left)) 0 max(16px, var(--safe-right));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 12px;
     }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; min-width: 0; }
+    .brand-mark {
+        width: 36px; height: 36px; border-radius: 11px;
+        display: grid; place-items: center;
+        background: var(--accent); color: var(--on-accent);
+    }
+    .brand-name { font-family: var(--font-serif); font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
+    .appbar-actions { display: flex; align-items: center; gap: 2px; }
 
+    main {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 28px max(16px, var(--safe-left)) calc(40px + var(--safe-bottom)) max(16px, var(--safe-right));
+    }
+
+    .page-head h1 {
+        font-family: var(--font-serif);
+        font-size: clamp(32px, 5vw, 48px);
+        font-weight: 500;
+        letter-spacing: -.02em;
+    }
+    .page-head p { margin-top: 6px; color: var(--muted); }
+
+    /* continue reading */
+    .resume {
+        margin-top: 24px;
+        display: grid;
+        grid-template-columns: 104px 1fr;
+        gap: 20px;
+        align-items: center;
+        padding: 18px;
+        border-radius: var(--r-lg);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow-1);
+    }
+    .resume[hidden] { display: none; }
+    .resume .cover { width: 104px; }
+    .resume h2 { font-family: var(--font-serif); font-size: clamp(21px, 3vw, 28px); font-weight: 560; margin: 2px 0 4px; letter-spacing: -.01em; }
+    .resume-meta { color: var(--muted); font-size: 14px; }
+    .resume-row { margin-top: 14px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .resume .bar { flex: 1 1 160px; max-width: 320px; }
+
+    /* toolbar */
+    .toolbar {
+        margin-top: 28px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+    }
+    .search { position: relative; }
+    .search .i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    .search .field { padding-left: 44px; border-radius: var(--r-pill); }
+    .view-toggle { display: flex; }
+    .chips {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        margin: 0 calc(-1 * max(16px, var(--safe-left)));
+        padding: 2px max(16px, var(--safe-left));
+    }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip {
+        flex: none;
+        min-height: 38px;
+        padding: 0 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-pill);
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 550;
+        transition: background-color .15s, color .15s, border-color .15s;
+    }
+    .chip:hover { color: var(--text); }
+    .chip[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
+
+    /* cover (shared by grid, list, resume) */
     .cover {
-
-        height: 210px;
+        position: relative;
+        aspect-ratio: 2 / 3;
+        overflow: hidden;
+        border-radius: 4px 10px 10px 4px;
+        background: linear-gradient(160deg, var(--accent-soft), var(--surface-3));
+        box-shadow: var(--shadow-1), inset 0 0 0 1px color-mix(in srgb, var(--text) 8%, transparent);
     }
-
-    .list-view .book-card {
-
-        flex-wrap: wrap;
+    .cover::after { /* binding crease */
+        content: "";
+        position: absolute; inset: 0;
+        background: linear-gradient(90deg, #0000002e 0, #ffffff22 3%, transparent 7%);
+        pointer-events: none;
+        z-index: 2;
     }
-
-    .list-view .read-button {
-
-        width: 100%;
-
-        margin: 10px 0 0;
+    .cover-fallback {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; justify-content: space-between;
+        padding: 14% 12% 10% 16%;
+        color: var(--text);
     }
-}
+    .cover-fallback b {
+        font-family: var(--font-serif);
+        font-weight: 600;
+        font-size: clamp(14px, 1.6vw, 19px);
+        line-height: 1.15;
+        display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+        overflow-wrap: anywhere;
+    }
+    .resume .cover-fallback b { font-size: 14px; }
+    .cover-fallback small { font-size: 12px; font-weight: 600; color: var(--accent); }
+    .cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0; transition: opacity .3s; }
+    .cover.has-image .cover-img { opacity: 1; }
+    .cover.is-loading::before {
+        content: ""; position: absolute; inset: 0; z-index: 1;
+        background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--surface) 55%, transparent) 50%, transparent 70%);
+        background-size: 250% 100%;
+        animation: shimmer 1.3s linear infinite;
+    }
+    @keyframes shimmer { from { background-position: 150% 0; } to { background-position: -100% 0; } }
 
+    .bar { height: 5px; border-radius: 5px; background: var(--surface-3); overflow: hidden; }
+    .bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+
+    /* grid */
+    #bookshelf { margin-top: 24px; }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+        gap: 28px 18px;
+    }
+    .book {
+        display: grid;
+        gap: 10px;
+        align-content: start;
+        padding: 0;
+        border: 0;
+        background: none;
+        text-align: left;
+        color: inherit;
+        min-width: 0;
+    }
+    .book .cover { transition: transform .25s var(--ease), box-shadow .25s; }
+    .book:hover .cover { transform: translateY(-4px); box-shadow: var(--shadow-2), inset 0 0 0 1px color-mix(in srgb, var(--text) 8%, transparent); }
+    .book:active .cover { transform: scale(.98); }
+    .book h3 {
+        font-family: var(--font-serif);
+        font-size: 17px;
+        font-weight: 560;
+        line-height: 1.22;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        overflow-wrap: anywhere;
+    }
+    .book .meta { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); }
+    .book .bar { margin-top: -2px; }
+    .done { color: var(--accent); font-weight: 600; }
+
+    /* list view */
+    .list { display: grid; gap: 10px; }
+    .list .book {
+        grid-template-columns: 56px minmax(0, 1fr);
+        gap: 16px;
+        align-items: center;
+        padding: 10px 14px 10px 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        background: var(--surface);
+    }
+    .list .book:hover { background: var(--surface-2); }
+    .list .book .cover { box-shadow: none; }
+    .list .book:hover .cover { transform: none; box-shadow: none; }
+    .list .cover-fallback { padding: 10%; }
+    .list .cover-fallback b, .list .cover-fallback small { display: none; }
+    .list .book-text { display: grid; gap: 6px; min-width: 0; }
+
+    /* states */
+    .skeleton { aspect-ratio: 2 / 3; border-radius: 4px 10px 10px 4px; background: var(--surface-2); position: relative; overflow: hidden; }
+    .skeleton::before { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--surface) 70%, transparent) 50%, transparent 70%); background-size: 250% 100%; animation: shimmer 1.3s linear infinite; }
+    .notice {
+        padding: 56px 20px;
+        text-align: center;
+        display: grid; gap: 10px; justify-items: center;
+        color: var(--muted);
+    }
+    .notice h2 { font-family: var(--font-serif); font-size: 26px; font-weight: 520; color: var(--text); }
+    .notice p { max-width: 42ch; }
+    .notice .btn { margin-top: 8px; }
+    .notice.error .i { color: #d6455d; width: 32px; height: 32px; }
+
+    @media (max-width: 640px) {
+        main { padding-top: 20px; }
+        .brand-name { font-size: 20px; }
+        .appbar-actions .icon-btn { width: 40px; height: 40px; }
+        .resume { grid-template-columns: 84px 1fr; gap: 14px; padding: 14px; }
+        .resume .cover { width: 84px; }
+        .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 14px; }
+        .book h3 { font-size: 16px; }
+    }
+    @media (min-width: 1000px) {
+        .grid { grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 34px 24px; }
+    }
 </style>
-
 </head>
 
-
 <body>
+{% include 'partials/icons.html' %}
 
-
-<header>
-
-<div class="header-inner">
-
-    <div class="brand">
-
-        <div class="brand-icon">
-            📚
+<header class="appbar">
+    <div class="appbar-inner">
+        <a class="brand" href="/bookshelf" aria-label="Book Reader library">
+            <span class="brand-mark"><svg class="i"><use href="#i-book"/></svg></span>
+            <span class="brand-name">Book Reader</span>
+        </a>
+        <div class="appbar-actions">
+            <button class="icon-btn" id="updateButton" onclick="checkForUpdates()" title="Check for new books" aria-label="Check for new books">
+                <svg class="i"><use href="#i-refresh"/></svg>
+            </button>
+            <button class="icon-btn" data-theme-open title="Appearance" aria-label="Appearance">
+                <svg class="i"><use href="#i-palette"/></svg>
+            </button>
+            <button class="icon-btn" onclick="changeLibrary()" title="Library settings" aria-label="Library settings">
+                <svg class="i"><use href="#i-folder"/></svg>
+            </button>
         </div>
-
-        <div>
-
-            <h1>
-                Book Reader
-            </h1>
-
-            <span>
-                Your personal library
-            </span>
-
-        </div>
-
     </div>
-
-
-    <div class="actions">
-
-        <button
-            class="action-button"
-            id="updateButton"
-            onclick="checkForUpdates()"
-        >
-            ↻ Check Updates
-        </button>
-
-
-        <button
-            class="action-button"
-            onclick="changeLibrary()"
-        >
-            ⚙ Library
-        </button>
-
-    </div>
-
-</div>
-
 </header>
 
-
 <main>
+    <section class="page-head">
+        <h1>Your library</h1>
+        <p id="lastUpdated">Loading your library…</p>
+    </section>
 
+    <section class="resume" id="resume" hidden></section>
 
-<section class="hero">
+    <div class="toolbar">
+        <label class="search">
+            <svg class="i"><use href="#i-search"/></svg>
+            <span class="sr-only">Search books</span>
+            <input class="field" id="search" type="search" placeholder="Search by title" autocomplete="off">
+        </label>
 
-    <div>
-
-        <h2>
-            My Bookshelf
-        </h2>
-
-        <p id="lastUpdated">
-            Loading your library...
-        </p>
-
-    </div>
-
-
-    <div class="stats">
-
-        <div class="stat">
-
-            <strong id="totalBooks">
-                0
-            </strong>
-
-            <span>
-                Books
-            </span>
-
+        <div class="segmented view-toggle" role="group" aria-label="Layout">
+            <button id="gridButton" aria-pressed="true" onclick="setView('grid')" aria-label="Grid view" title="Grid view"><svg class="i"><use href="#i-grid"/></svg></button>
+            <button id="listButton" aria-pressed="false" onclick="setView('list')" aria-label="List view" title="List view"><svg class="i"><use href="#i-list"/></svg></button>
         </div>
 
-
-        <div class="stat">
-
-            <strong id="completedBooks">
-                0
-            </strong>
-
-            <span>
-                Completed
-            </span>
-
+        <div class="chips" id="filters" role="group" aria-label="Filter books">
+            <button class="chip" data-filter="all" aria-pressed="true">All</button>
+            <button class="chip" data-filter="continue" aria-pressed="false">Reading</button>
+            <button class="chip" data-filter="not-started" aria-pressed="false">Unread</button>
+            <button class="chip" data-filter="completed" aria-pressed="false">Finished</button>
+            <button class="chip" data-filter="history" aria-pressed="false">Opened before</button>
         </div>
-
     </div>
 
-</section>
-
-
-<div class="toolbar">
-
-    <input
-        class="search"
-        id="search"
-        type="search"
-        placeholder="Search books..."
-        aria-label="Search books"
-    >
-
-    <select
-        class="filter-select"
-        id="filter"
-        aria-label="Filter books"
-    >
-        <option value="all">All books</option>
-        <option value="continue">Continue reading</option>
-        <option value="completed">Completed</option>
-        <option value="history">Reading history</option>
-        <option value="not-started">Not started</option>
-    </select>
-
-
-    <div class="view-toggle">
-
-        <button
-            id="gridButton"
-            class="active"
-            onclick="setView('grid')"
-        >
-            ▦
-        </button>
-
-        <button
-            id="listButton"
-            onclick="setView('list')"
-        >
-            ☰
-        </button>
-
-    </div>
-
-</div>
-
-
-<div id="bookshelf">
-
-    <div class="loading">
-        Loading your library...
-    </div>
-
-</div>
-
-
+    <div id="bookshelf" aria-live="polite"></div>
 </main>
 
-
+<script src="{{ url_for('static', filename='js/bookfile.js') }}"></script>
+<script src="{{ url_for('static', filename='js/covers.js') }}"></script>
 <script>
 
 let allBooks = [];
-
-let currentView =
-    localStorage.getItem(
-        "bookshelfView"
-    ) || "grid";
-
+let currentView = localStorage.getItem("bookshelfView") || "grid";
 let currentFilter = "all";
 
-
-// ============================================================
-// UPDATE STATS
-// ============================================================
-
-function updateStats() {
-
-    const total =
-        allBooks.length;
-
-
-    let completed = 0;
-
-
-    allBooks.forEach(
-        book => {
-
-            if (
-                getProgress(book) >= 100
-            ) {
-
-                completed++;
-
-            }
-
-        }
-    );
-
-
-    document.getElementById(
-        "totalBooks"
-    ).textContent =
-        total;
-
-
-    document.getElementById(
-        "completedBooks"
-    ).textContent =
-        completed;
-}
+const $ = id => document.getElementById(id);
 
 
 // ============================================================
-// GET BOOK PROGRESS
+// READING STATE
 // ============================================================
-
-function getProgress(book) {
-
-    const key =
-        "reading_" +
-        book.id;
-
-
-    const saved =
-        localStorage.getItem(
-            key
-        );
-
-
-    if (!saved) {
-        return 0;
-    }
-
-
-    try {
-
-        const data =
-            JSON.parse(saved);
-
-
-        return Math.max(
-            0,
-            Math.min(
-                100,
-                Number(
-                    data.progress || 0
-                )
-            )
-        );
-
-    } catch {
-
-        return 0;
-
-    }
-}
 
 function getReadingState(book) {
-
     try {
-        return JSON.parse(
-            localStorage.getItem("reading_" + book.id) || "{}"
-        );
+        return JSON.parse(localStorage.getItem("reading_" + book.id) || "{}") || {};
     } catch {
         return {};
     }
 }
 
-function getHistory() {
+function getProgress(book) {
+    const data = getReadingState(book);
+    return Math.max(0, Math.min(100, Number(data.progress || 0)));
+}
 
+function getHistory() {
     try {
-        const history = JSON.parse(
-            localStorage.getItem("readingHistory") || "[]"
-        );
+        const history = JSON.parse(localStorage.getItem("readingHistory") || "[]");
         return Array.isArray(history) ? history : [];
     } catch {
         return [];
     }
 }
+
+function updateSummary(extra) {
+    const finished = allBooks.filter(book => getProgress(book) >= 100).length;
+    const count = allBooks.length;
+    let text = `${count} ${count === 1 ? "book" : "books"}`;
+    if (finished) text += `, ${finished} finished`;
+    if (extra) text += `. ${extra}`;
+    $("lastUpdated").textContent = text;
+}
+
+
+// ============================================================
+// ACCOUNT SYNC
+// ============================================================
 
 async function syncAccountProgress() {
     const keyword = localStorage.getItem("readerAccountKeyword");
@@ -953,173 +399,78 @@ async function syncAccountProgress() {
 // LOAD LIBRARY
 // ============================================================
 
-async function loadBooks(
-    showLoading = true
-) {
+function showSkeleton() {
+    const shelf = $("bookshelf");
+    shelf.className = "grid";
+    shelf.innerHTML = Array.from({ length: 8 }, () => '<div class="skeleton"></div>').join("");
+}
 
-    const folder =
-        localStorage.getItem(
-            "driveFolderUrl"
-        );
+async function loadBooks(showLoading = true) {
 
+    const folder = localStorage.getItem("driveFolderUrl");
 
     if (!folder) {
-
-        window.location.href =
-            "/setup";
-
+        window.location.href = "/setup";
         return;
-
     }
-
 
     if (showLoading) {
-
-        document.getElementById(
-            "bookshelf"
-        ).innerHTML = `
-            <div class="loading">
-                Loading your library...
-            </div>
-        `;
-
+        showSkeleton();
     }
-
 
     try {
 
         await syncAccountProgress();
 
-        const response =
-            await fetch(
-                "/api/books?folder=" +
-                encodeURIComponent(
-                    folder
-                ) +
-                "&t=" +
-                Date.now(),
-                {
-                    cache:
-                        "no-store"
-                }
-            );
+        const response = await fetch(
+            "/api/books?folder=" + encodeURIComponent(folder) + "&t=" + Date.now(),
+            { cache: "no-store" }
+        );
 
+        const data = await response.json();
 
-        const data =
-            await response.json();
-
-
-        if (
-            !response.ok ||
-            !data.success
-        ) {
-
-            throw new Error(
-                data.error ||
-                "Unable to load library."
-            );
-
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Unable to load library.");
         }
 
+        allBooks = data.books || [];
 
-        allBooks =
-            data.books || [];
+        localStorage.setItem("books", JSON.stringify(allBooks));
+        localStorage.setItem("libraryLastChecked", new Date().toISOString());
 
-
-        localStorage.setItem(
-            "books",
-            JSON.stringify(
-                allBooks
-            )
-        );
-
-
-        localStorage.setItem(
-            "libraryLastChecked",
-            new Date().toISOString()
-        );
-
-
-        updateStats();
-
-        displayBooks(
-            allBooks
-        );
-
-
-        document.getElementById(
-            "lastUpdated"
-        ).textContent =
-            `${allBooks.length} books · Last checked just now`;
-
+        updateSummary();
+        displayBooks();
 
     } catch (error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
-
-        // Try cached library
-
+        // Fall back to the cached library.
         try {
-
-            const cached =
-                JSON.parse(
-                    localStorage.getItem(
-                        "books"
-                    ) || "[]"
-                );
-
+            const cached = JSON.parse(localStorage.getItem("books") || "[]");
 
             if (cached.length) {
-
-                allBooks =
-                    cached;
-
-                updateStats();
-
-                displayBooks(
-                    allBooks
-                );
-
-                document.getElementById(
-                    "lastUpdated"
-                ).textContent =
-                    "Showing cached library";
-
+                allBooks = cached;
+                updateSummary("Showing your saved library while offline.");
+                displayBooks();
                 return;
-
             }
-
         } catch {
-
             // Nothing cached
         }
 
-
-        document.getElementById(
-            "bookshelf"
-        ).innerHTML = `
-
-            <div class="error">
-
-                <strong>
-                    ❌ Unable to load your library.
-                </strong>
-
-                <br><br>
-
-                ${escapeHtml(
-                    error.message
-                )}
-
-            </div>
-
-        `;
-
+        $("lastUpdated").textContent = "";
+        $("resume").hidden = true;
+        const shelf = $("bookshelf");
+        shelf.className = "";
+        shelf.innerHTML = `
+            <div class="notice error">
+                <svg class="i"><use href="#i-alert"/></svg>
+                <h2>Couldn't load your library</h2>
+                <p>${escapeHtml(error.message)}</p>
+                <button class="btn btn-primary" onclick="loadBooks()">Try again</button>
+            </div>`;
     }
-
 }
 
 
@@ -1127,33 +478,63 @@ async function loadBooks(
 // DISPLAY
 // ============================================================
 
-function displayBooks(
-    books
-) {
+function coverMarkup(book) {
+    const title = escapeHtml(book.title || book.name || "Untitled");
+    return `<div class="cover-fallback"><b>${title}</b><small>${escapeHtml(String(book.type || "").toUpperCase())}</small></div>`;
+}
 
-    const bookshelf =
-        document.getElementById(
-            "bookshelf"
-        );
+function renderResume() {
+    const box = $("resume");
+    const byId = new Map(allBooks.map(book => [String(book.id), book]));
 
+    const last = getHistory()
+        .filter(item => byId.has(String(item.id)))
+        .map(item => ({ item, book: byId.get(String(item.id)) }))
+        .filter(({ book }) => {
+            const p = getProgress(book);
+            return p > 0 && p < 100;
+        })
+        .sort((a, b) =>
+            String(b.item.lastRead || b.item.openedAt || "")
+                .localeCompare(String(a.item.lastRead || a.item.openedAt || ""))
+        )[0];
 
-    const query =
-        document.getElementById(
-            "search"
-        ).value
-        .trim()
-        .toLowerCase();
+    if (!last) {
+        box.hidden = true;
+        return;
+    }
 
+    const book = last.book;
+    const progress = getProgress(book);
 
-    const historyIds = new Set(
-        getHistory().map(item => String(item.id))
-    );
+    box.hidden = false;
+    box.innerHTML = `
+        <div class="cover">${coverMarkup(book)}</div>
+        <div>
+            <p class="resume-meta">Pick up where you left off</p>
+            <h2>${escapeHtml(book.title || book.name)}</h2>
+            <p class="resume-meta">${escapeHtml(String(book.type).toUpperCase())}, ${progress}% read</p>
+            <div class="resume-row">
+                <div class="bar" role="progressbar" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"><i style="width:${progress}%"></i></div>
+                <button class="btn btn-primary">Continue reading</button>
+            </div>
+        </div>`;
 
-    const filtered = books.filter(book => {
+    window.Covers.attach(box.querySelector(".cover"), book);
+    box.querySelector("button").addEventListener("click", () => openBook(book));
+}
+
+function displayBooks() {
+
+    const shelf = $("bookshelf");
+    const query = $("search").value.trim().toLowerCase();
+    const historyIds = new Set(getHistory().map(item => String(item.id)));
+
+    renderResume();
+
+    const filtered = allBooks.filter(book => {
         const progress = getProgress(book);
-        const matchesQuery = (book.title || book.name || "")
-            .toLowerCase()
-            .includes(query);
+        const matchesQuery = (book.title || book.name || "").toLowerCase().includes(query);
 
         const matchesFilter =
             currentFilter === "all" ||
@@ -1165,68 +546,32 @@ function displayBooks(
         return matchesQuery && matchesFilter;
     });
 
-
     if (!filtered.length) {
+        shelf.className = "";
 
-        bookshelf.className = "";
+        let title = "Nothing here yet";
+        let text = "Add PDF or EPUB files to your Google Drive folder, then check for new books.";
+        if (query) {
+            title = "No matching books";
+            text = "Try a different title.";
+        } else if (allBooks.length) {
+            title = "No books in this group";
+            text = "Choose another filter to see the rest of your library.";
+        }
 
-        bookshelf.innerHTML = `
-
-            <div class="empty">
-
-                <div class="empty-icon">
-                    📚
-                </div>
-
-                <h2>
-                    ${
-                        query
-                        ? "No matching books"
-                        : "No books found"
-                    }
-                </h2>
-
-                <p>
-                    ${
-                        query
-                        ? "Try another search."
-                        : "No PDF or EPUB books were found."
-                    }
-                </p>
-
-            </div>
-
-        `;
-
+        shelf.innerHTML = `
+            <div class="notice">
+                <h2>${title}</h2>
+                <p>${text}</p>
+                ${allBooks.length ? "" : '<button class="btn btn-primary" onclick="checkForUpdates()">Check for new books</button>'}
+            </div>`;
         return;
-
     }
 
+    shelf.className = currentView === "list" ? "list" : "grid";
+    shelf.innerHTML = "";
 
-    bookshelf.className =
-        currentView === "list"
-        ? "list-view"
-        : "";
-
-
-    bookshelf.innerHTML = "";
-
-
-    filtered.forEach(
-        book => {
-
-            const card =
-                createBookCard(
-                    book
-                );
-
-            bookshelf.appendChild(
-                card
-            );
-
-        }
-    );
-
+    filtered.forEach(book => shelf.appendChild(createBookCard(book)));
 }
 
 
@@ -1234,160 +579,34 @@ function displayBooks(
 // BOOK CARD
 // ============================================================
 
-function createBookCard(
-    book
-) {
+function createBookCard(book) {
 
-    const card =
-        document.createElement(
-            "div"
-        );
+    const card = document.createElement("button");
+    card.className = "book";
+    card.type = "button";
 
+    const progress = getProgress(book);
+    const completed = progress >= 100;
+    const title = book.title || book.name || "Untitled";
 
-    card.className =
-        "book-card";
-
-
-    const progress =
-        getProgress(
-            book
-        );
-
-
-    const completed =
-        progress >= 100;
-
-
-    let cover;
-
-
-    if (book.thumbnail) {
-
-        cover = `
-
-            <img
-                src="${escapeAttribute(book.thumbnail)}"
-                alt="${escapeAttribute(book.title)}"
-                loading="lazy"
-            >
-
-        `;
-
-    } else {
-
-        cover = `
-
-            <div class="placeholder">
-
-                ${
-                    book.type === "pdf"
-                    ? "📕"
-                    : "📘"
-                }
-
-            </div>
-
-        `;
-
-    }
-
-
-    card.innerHTML = `
-
-        <div class="cover">
-
-            ${cover}
-
-        </div>
-
-
-        <div class="book-info">
-
-            <h3 class="book-title">
-
-                ${escapeHtml(
-                    book.title
-                )}
-
-            </h3>
-
-
-            <span class="book-type">
-
-                ${book.type.toUpperCase()}
-
-            </span>
-
-
-            <div class="progress-container">
-
-                <div class="progress-label">
-
-                    <span>
-                        ${
-                            completed
-                            ? "Completed"
-                            : "Progress"
-                        }
-                    </span>
-
-                    <span>
-                        ${progress}%
-                    </span>
-
-                </div>
-
-
-                <div class="progress">
-
-                    <div
-                        class="progress-bar"
-                        style="width:${progress}%"
-                    ></div>
-
-                </div>
-
-            </div>
-
-
-            <button
-                class="read-button"
-            >
-
-                ${
-                    completed
-                    ? "Read Again"
-                    : progress > 0
-                    ? "Continue Reading"
-                    : "Start Reading"
-                }
-
-            </button>
-
-        </div>
-
-    `;
-
-
-    // IMPORTANT:
-    // Don't put the complete object inside
-    // inline HTML JavaScript.
-    //
-    // Store it through the click handler.
-
-    card.querySelector(
-        ".read-button"
-    ).addEventListener(
-        "click",
-        function() {
-
-            openBook(
-                book
-            );
-
-        }
+    card.setAttribute(
+        "aria-label",
+        `${title}, ${String(book.type).toUpperCase()}, ${completed ? "finished" : progress + "% read"}`
     );
 
+    card.innerHTML = `
+        <div class="cover">${coverMarkup(book)}</div>
+        <div class="book-text">
+            <h3>${escapeHtml(title)}</h3>
+            <div class="meta">
+                <span>${escapeHtml(String(book.type).toUpperCase())}</span>
+                <span class="${completed ? "done" : ""}">${completed ? "Finished" : progress > 0 ? progress + "%" : "New"}</span>
+            </div>
+            ${progress > 0 ? `<div class="bar"><i style="width:${progress}%"></i></div>` : ""}
+        </div>`;
+
+    window.Covers.attach(card.querySelector(".cover"), book);
+    card.addEventListener("click", () => openBook(book));
 
     return card;
 }
@@ -1397,199 +616,78 @@ function createBookCard(
 // OPEN BOOK
 // ============================================================
 
-function openBook(
-    book
-) {
+function openBook(book) {
 
-    console.log(
-        "Opening book:",
-        book
-    );
+    // The reader reads this key.
+    localStorage.setItem("currentBook", JSON.stringify(book));
 
+    let history = getHistory().filter(item => String(item.id) !== String(book.id));
 
-    // IMPORTANT:
-    // Reader uses exactly this key.
-
-    localStorage.setItem(
-        "currentBook",
-        JSON.stringify(
-            book
-        )
-    );
-
-
-    // Reading history
-
-    let history = [];
-
-
-    try {
-
-        history =
-            JSON.parse(
-                localStorage.getItem(
-                    "readingHistory"
-                ) || "[]"
-            );
-
-    } catch {
-
-        history = [];
-
-    }
-
-
-    history =
-        history.filter(
-            item =>
-                item.id !== book.id
-        );
-
+    const previous = getHistory().find(item => String(item.id) === String(book.id)) || {};
 
     history.unshift({
-
-        id:
-            book.id,
-
-        title:
-            book.title,
-
-        type:
-            book.type,
-
-        openedAt:
-            new Date().toISOString()
-
+        ...previous,
+        id: book.id,
+        title: book.title,
+        type: book.type,
+        openedAt: new Date().toISOString()
     });
 
+    localStorage.setItem("readingHistory", JSON.stringify(history.slice(0, 50)));
 
-    localStorage.setItem(
-        "readingHistory",
-        JSON.stringify(
-            history.slice(
-                0,
-                50
-            )
-        )
-    );
-
-
-    // Go to reader
-
-    window.location.href =
-        "/reader";
-
+    window.location.href = "/reader";
 }
 
 
 // ============================================================
-// CHECK UPDATES
+// ACTIONS
 // ============================================================
 
 async function checkForUpdates() {
+    const button = $("updateButton");
+    button.disabled = true;
+    button.querySelector("svg").style.animation = "spin .9s linear infinite";
 
-    const button =
-        document.getElementById(
-            "updateButton"
-        );
+    await loadBooks(false);
 
-
-    button.disabled =
-        true;
-
-
-    button.textContent =
-        "Checking...";
-
-
-    await loadBooks(
-        false
-    );
-
-
-    button.disabled =
-        false;
-
-
-    button.textContent =
-        "↻ Check Updates";
-
+    button.disabled = false;
+    button.querySelector("svg").style.animation = "";
 }
-
-
-// ============================================================
-// CHANGE LIBRARY
-// ============================================================
 
 function changeLibrary() {
-
-    window.location.href =
-        "/setup";
-
+    window.location.href = "/setup";
 }
 
-
-// ============================================================
-// VIEW
-// ============================================================
-
-function setView(
-    view
-) {
-
-    currentView =
-        view;
-
-
-    localStorage.setItem(
-        "bookshelfView",
-        view
-    );
-
-
-    document.getElementById(
-        "gridButton"
-    ).classList.toggle(
-        "active",
-        view === "grid"
-    );
-
-
-    document.getElementById(
-        "listButton"
-    ).classList.toggle(
-        "active",
-        view === "list"
-    );
-
-
-    displayBooks(
-        allBooks
-    );
-
+function setView(view) {
+    currentView = view;
+    localStorage.setItem("bookshelfView", view);
+    syncViewButtons();
+    displayBooks();
 }
 
+function syncViewButtons() {
+    $("gridButton").setAttribute("aria-pressed", String(currentView === "grid"));
+    $("listButton").setAttribute("aria-pressed", String(currentView === "list"));
+}
 
-// ============================================================
-// SEARCH
-// ============================================================
+$("search").addEventListener("input", () => displayBooks());
 
-document.getElementById(
-    "search"
-).addEventListener(
-    "input",
-    function() {
+$("filters").addEventListener("click", event => {
+    const chip = event.target.closest("[data-filter]");
+    if (!chip) return;
+    currentFilter = chip.dataset.filter;
+    document.querySelectorAll("#filters .chip").forEach(c =>
+        c.setAttribute("aria-pressed", String(c === chip))
+    );
+    displayBooks();
+});
 
-        displayBooks(
-            allBooks
-        );
-
+// Coming back with the browser's back button: refresh progress.
+window.addEventListener("pageshow", event => {
+    if (event.persisted && allBooks.length) {
+        updateSummary();
+        displayBooks();
     }
-);
-
-document.getElementById("filter").addEventListener("change", function() {
-    currentFilter = this.value;
-    displayBooks(allBooks);
 });
 
 
@@ -1597,50 +695,10 @@ document.getElementById("filter").addEventListener("change", function() {
 // ESCAPE
 // ============================================================
 
-function escapeHtml(
-    value
-) {
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-    div.textContent =
-        value || "";
-
+function escapeHtml(value) {
+    const div = document.createElement("div");
+    div.textContent = value || "";
     return div.innerHTML;
-}
-
-
-function escapeAttribute(
-    value
-) {
-
-    return String(
-        value || ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#39;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    );
-
 }
 
 
@@ -1648,29 +706,12 @@ function escapeAttribute(
 // INITIALIZE
 // ============================================================
 
-if (
-    currentView === "list"
-) {
-
-    document.getElementById(
-        "gridButton"
-    ).classList.remove(
-        "active"
-    );
-
-    document.getElementById(
-        "listButton"
-    ).classList.add(
-        "active"
-    );
-
-}
-
-
+syncViewButtons();
 loadBooks();
 
 </script>
 
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 </body>
 
 </html>

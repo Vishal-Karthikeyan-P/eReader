@@ -1,0 +1,13 @@
+{
+  "name": "Book Reader",
+  "short_name": "Reader",
+  "description": "Your personal PDF and EPUB library",
+  "start_url": "/bookshelf",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f4fb",
+  "theme_color": "#4f46e5",
+  "icons": [
+    { "src": "/static/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -2,394 +2,129 @@
 <html lang="en">
 
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Connect Library - Book Reader
-    </title>
-
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-
-        body {
-
-            margin: 0;
-
-            min-height: 100vh;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-family:
-                Inter,
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #f6f7fb,
-                    #eef1f8
-                );
-
-            color: #111827;
-
-        }
-
-
-        .container {
-
-            width:
-                min(92%, 620px);
-
-            background: white;
-
-            padding: 46px;
-
-            border-radius: 24px;
-
-            box-shadow:
-                0 20px 60px
-                rgba(0, 0, 0, .10);
-
-        }
-
-
-        .logo {
-
-            width: 64px;
-
-            height: 64px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            background: #111827;
-
-            border-radius: 18px;
-
-            margin-bottom: 28px;
-
-        }
-
-
-        .logo span {
-
-            font-size: 30px;
-
-        }
-
-
-        h1 {
-
-            margin: 0 0 12px;
-
-            font-size: 32px;
-
-            letter-spacing: -1px;
-
-        }
-
-
-        .description {
-
-            color: #687084;
-
-            line-height: 1.65;
-
-            margin-bottom: 32px;
-
-        }
-
-
-        label {
-
-            display: block;
-
-            font-weight: 600;
-
-            margin-bottom: 10px;
-
-        }
-
-
-        input {
-
-            width: 100%;
-
-            padding: 15px;
-
-            border: 1px solid #d9dde7;
-
-            border-radius: 12px;
-
-            outline: none;
-
-            font-size: 14px;
-
-        }
-
-
-        input:focus {
-
-            border-color: #6366f1;
-
-            box-shadow:
-                0 0 0 4px
-                rgba(99,102,241,.12);
-
-        }
-
-
-        button {
-
-            width: 100%;
-
-            margin-top: 18px;
-
-            padding: 15px;
-
-            border: none;
-
-            border-radius: 12px;
-
-            background: #111827;
-
-            color: white;
-
-            font-size: 15px;
-
-            font-weight: 700;
-
-            cursor: pointer;
-
-        }
-
-
-        button:hover {
-
-            background: #252c3b;
-
-        }
-
-
-        button:disabled {
-
-            opacity: .6;
-
-            cursor: wait;
-
-        }
-
-
-        .message {
-
-            margin-top: 18px;
-
-            padding: 14px;
-
-            border-radius: 10px;
-
-            display: none;
-
-            line-height: 1.55;
-
-            font-size: 14px;
-
-        }
-
-
-        .error {
-
-            display: block;
-
-            background: #fff1f2;
-
-            color: #be123c;
-
-        }
-
-
-        .success {
-
-            display: block;
-
-            background: #ecfdf5;
-
-            color: #047857;
-
-        }
-
-
-        .debug {
-
-            margin-top: 12px;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            background: #f4f5f7;
-
-            color: #4b5563;
-
-            font-family: monospace;
-
-            font-size: 12px;
-
-            white-space: pre-wrap;
-
-            word-break: break-word;
-
-        }
-
-
-        .hint {
-
-            margin-top: 22px;
-
-            color: #7a8293;
-
-            font-size: 13px;
-
-            line-height: 1.6;
-
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f4fb">
+<title>Connect your library · Book Reader</title>
+
+<link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+<link rel="icon" href="{{ url_for('static', filename='icons/icon.svg') }}" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+<style>
+    body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: calc(24px + var(--safe-top)) 16px calc(24px + var(--safe-bottom));
+        background:
+            radial-gradient(900px 500px at 85% -10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
+            var(--bg);
+    }
+    .theme-corner { position: fixed; top: calc(10px + var(--safe-top)); right: 12px; }
+
+    .container {
+        width: min(460px, 100%);
+        padding: 36px 32px 30px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--surface);
+        box-shadow: var(--shadow-2);
+    }
+    .brand-mark {
+        width: 48px; height: 48px; border-radius: 15px;
+        display: grid; place-items: center;
+        background: var(--accent); color: var(--on-accent);
+        margin-bottom: 22px;
+    }
+    .brand-mark .i { width: 26px; height: 26px; }
+    h1 { font-family: var(--font-serif); font-size: 34px; font-weight: 500; letter-spacing: -.02em; }
+    .description { margin-top: 10px; color: var(--muted); }
+
+    form { margin-top: 26px; display: grid; gap: 6px; }
+    label { margin-top: 12px; font-size: 14px; font-weight: 600; }
+    form label:first-child { margin-top: 0; }
+    .help { font-size: 13px; color: var(--muted); }
+    #connectButton { margin-top: 22px; width: 100%; min-height: 48px; }
+
+    .message { display: none; margin-top: 18px; padding: 12px 14px; border-radius: var(--r-md); font-size: 14px; }
+    .message.error { background: color-mix(in srgb, #d6455d 14%, var(--surface)); color: color-mix(in srgb, #d6455d 70%, var(--text)); }
+    .message.success { background: var(--accent-soft); color: var(--text); }
+    .debug { margin-top: 12px; max-height: 180px; overflow: auto; padding: 12px; border-radius: var(--r-sm); background: var(--surface-2); font: 12px/1.5 ui-monospace, Menlo, monospace; white-space: pre-wrap; }
+
+    .hint { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+    .hint strong { color: var(--text); font-weight: 600; }
+
+    @media (max-width: 480px) {
+        .container { padding: 28px 20px 24px; border-radius: 20px; }
+        h1 { font-size: 30px; }
+    }
+</style>
 </head>
 
-
 <body>
+{% include 'partials/icons.html' %}
 
+<button class="icon-btn theme-corner" data-theme-open title="Appearance" aria-label="Appearance">
+    <svg class="i"><use href="#i-palette"/></svg>
+</button>
 
 <div class="container">
 
+    <div class="brand-mark"><svg class="i"><use href="#i-book"/></svg></div>
 
-    <div class="logo">
-
-        <span>
-            📚
-        </span>
-
-    </div>
-
-
-    <h1>
-        Connect your library
-    </h1>
-
+    <h1>Connect your library</h1>
 
     <p class="description">
-
-        Create a private keyword to sync your library
-        and reading progress across devices. Keep it
-        private: anyone who knows it can access your account.
-
+        Choose a private keyword to keep your library and reading progress in sync
+        across devices. Anyone who knows it can open your library, so keep it to yourself.
     </p>
-
 
     <form id="setupForm">
 
-        <label for="keyword">
-
-            Private Keyword
-
-        </label>
-
-
+        <label for="keyword">Private keyword</label>
         <input
+            class="field"
             id="keyword"
             type="password"
             minlength="12"
             maxlength="64"
             pattern="[A-Za-z0-9_-]{12,64}"
-            placeholder="12-64 letters, numbers, _ or -"
+            placeholder="12–64 letters, numbers, _ or -"
             autocomplete="off"
             required
         >
 
-
-        <label for="folderUrl">
-
-            Google Drive Folder (leave blank to restore)
-
-        </label>
-
-
+        <label for="folderUrl">Google Drive folder</label>
         <input
+            class="field"
             id="folderUrl"
             type="text"
-            placeholder="https://drive.google.com/drive/folders/..."
+            inputmode="url"
+            placeholder="https://drive.google.com/drive/folders/…"
             autocomplete="off"
         >
+        <span class="help">Leave this empty to restore a library you already created.</span>
 
-
-        <button
-            id="connectButton"
-            type="submit"
-        >
-
-            Connect Library
-
-        </button>
-
+        <button class="btn btn-primary" id="connectButton" type="submit">Connect library</button>
 
     </form>
 
+    <div id="message" class="message" role="status"></div>
 
-    <div
-        id="message"
-        class="message"
-    ></div>
-
-
-    <div
-        id="debug"
-        class="debug"
-        style="display:none"
-    ></div>
-
+    <div id="debug" class="debug" style="display:none"></div>
 
     <div class="hint">
-
-        Make sure the folder is shared as
-
-        <strong>
-            Anyone with the link → Viewer
-        </strong>
-
-        <br>
-
-        Only PDF and EPUB files directly inside
-        this folder are loaded.
-
+        Share the folder as <strong>Anyone with the link, Viewer</strong>.
+        Only PDF and EPUB files directly inside the folder are loaded.
     </div>
 
-
 </div>
-
 
 <script>
 
@@ -514,7 +249,7 @@ form.addEventListener(
 
 
         button.textContent =
-            "Checking Google Drive...";
+            "Checking Google Drive…";
 
 
         message.style.display =
@@ -530,7 +265,7 @@ form.addEventListener(
             if (!folderUrl) {
 
                 button.textContent =
-                    "Restoring library...";
+                    "Restoring library…";
 
                 const response = await fetch(
                     "/api/account/session",
@@ -677,7 +412,7 @@ form.addEventListener(
 
 
                 message.innerHTML =
-                    "❌ Google Drive was accessed successfully, " +
+                    "Google Drive was reached, " +
                     "but no PDF or EPUB books were found.";
 
 
@@ -698,7 +433,7 @@ form.addEventListener(
 
 
                 button.textContent =
-                    "Connect Library";
+                    "Connect library";
 
 
                 return;
@@ -816,11 +551,9 @@ form.addEventListener(
 
 
             message.textContent =
-                "✓ "
-                +
                 data.books.length
                 +
-                " books found. Opening bookshelf...";
+                " books found. Opening your library…";
 
 
             /* ------------------------------------------------
@@ -856,7 +589,7 @@ form.addEventListener(
 
 
             button.textContent =
-                "Connect Library";
+                "Connect library";
 
         }
 
@@ -881,7 +614,7 @@ function showError(
 
 
     message.textContent =
-        "❌ " + text;
+        text;
 
 }
 
@@ -909,7 +642,6 @@ function escapeHtml(
 }
 
 </script>
-
 
 </body>
 
